@@ -2,7 +2,7 @@
 > This project is still incomplete and in progress, so it is not guaranteed to be complete and may contain unfixed or serious bugs.
 
 # Luao
-## The new, modern Lua language specification
+The new, modern Lua language specification
 
 <img src="https://github.com/akki697222/Luao/blob/main/luao-logo.png?raw=true" width="200">
 
