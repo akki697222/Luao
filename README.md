@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This project is still incomplete and in progress, so it is not guaranteed to be complete and may contain unfixed or serious bugs.
+
 # Luao
 ## The new, modern Lua language specification
 
