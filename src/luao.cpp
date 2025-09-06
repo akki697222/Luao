@@ -11,8 +11,17 @@ int main(int argc, char **argv)
 {
     std::string source = R"(
         local x<const> = 42;
+        local $specialIdentified: string = "Hello, World!"
         for k, v each t do
-            throw RuntimeError("Test!!");
+            throw RuntimeError("Test!!")
+        end
+        -- function return type annotation
+        function add(a: int, b: int) -> int
+            return a + b
+        end
+        -- and multiple return values
+        function getValues() -> (int, string, bool)
+            return 1, "two", true
         end
         -- single line comment
         --[[ 

@@ -16,7 +16,9 @@ TokenInfo Lexer::nextToken() {
 
     switch (current) {
         case '+': advance(); return {Token::PLUS, "+", line_};
-        case '-': advance(); return {Token::MINUS, "-", line_};
+        case '-': advance(); 
+            if (peekChar() == '>') { advance(); return {Token::ARROW, "->", line_}; }
+            return {Token::MINUS, "-", line_};
         case '*': advance(); return {Token::MULTIPLY, "*", line_};
         case '/':
             advance();
@@ -55,6 +57,7 @@ TokenInfo Lexer::nextToken() {
             if (peekChar() == ':') { advance(); return {Token::COLON_DB, "::", line_}; }
             return {Token::COLON, ":", line_};
         case ',': advance(); return {Token::COMMA, ",", line_};
+        case '!': advance(); return {Token::NULLABLE, "!", line_};
         case '.':
             advance();
             if (peekChar() == '.') {
@@ -326,7 +329,7 @@ void Lexer::throwError(const std::string& msg) {
 }
 
 bool Lexer::isAlpha(char c) const {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$';
 }
 
 bool Lexer::isDigit(char c) const {

@@ -22,8 +22,13 @@ If you use metatables (such as `setmetatable`, `getmetatable`, `__index`, operat
 
 ### Typed Function
 ```luao
-function add(a: int, b: int): int
+function add(a: int, b: int) -> int
     return a + b
+end
+
+-- 
+function unpackVec3(v: Vec3) -> (int, int, int)
+    return v.x, v.y, v.z
 end
 
 -- the return type can be omitted.
@@ -37,7 +42,7 @@ end
 local x: long = 10
 local y: int = 5
 
-function add(a: int, b: int): int
+function add(a: int, b: int) -> int
     return a + b
 end
 
@@ -112,7 +117,7 @@ strings.add("Orange")
 
 -- for iteration without pairs and ipairs
 -- for each requires 'next()' method in object
-for name each strings do
+for i, name each strings do
     print(name)
 end
 ```
@@ -137,6 +142,13 @@ object Array;
             self.len = 1
         elseif len < 1 or len > int.MAX then
             throw InvalidArrayLengthError("invalid length " .. len .. " (expected 1~2147483647)")
+        end
+    end
+
+    function next()
+        local index = 1
+        return function() 
+            return index, self._index[index]
         end
     end
 
@@ -175,4 +187,27 @@ object CppStdCout;
 end
 
 CppStdCout << "Hello, World!"
+```
+
+### Advanced Error Handling
+```luao
+function dangerousFunction()
+    throw RuntimeError("Boom!")
+end
+
+try
+    dangerousFunction()
+catch (e: RuntimeError) do
+    print("Error: " .. e) -- Error: RuntimeError: Boom!
+finally
+    print("Executed!")
+end
+
+-- or...
+
+try
+    dangerousFunction()
+catch (e: RuntimeError) do
+    print("Error: " .. e) -- Error: RuntimeError: Boom!
+end
 ```
