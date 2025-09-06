@@ -1,0 +1,17 @@
+# work dir
+.vscode/
+
+# cmake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# build
+build/
+bin/
+
+# other
+src_lua/
+test.bat
+test.lua
