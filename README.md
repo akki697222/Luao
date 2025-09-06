@@ -4,6 +4,8 @@
 # Luao
 ## The new, modern Lua language specification
 
+<img src="https://github.com/akki697222/Luao/blob/main/luao-logo.png?raw=true" width="200">
+
 ## Overview
 - Advanced class-based object-oriented programming including inheritance and abstraction
 - Better error handling using try-catch-finally statements and error types
