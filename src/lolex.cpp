@@ -119,8 +119,8 @@ void Lexer::skipWhitespace() {
 }
 
 void Lexer::skipComment() {
-    advance(); // -
-    advance(); // -
+    advance();
+    advance();
     if (peekChar() == '[') {
         advance();
         if (peekChar() == '[') {
@@ -128,7 +128,7 @@ void Lexer::skipComment() {
             skipLongComment();
             return;
         }
-        pos_--; // [ を戻す
+        pos_--;
     }
     while (pos_ < source_.size() && source_[pos_] != '\n') {
         advance();
@@ -195,8 +195,8 @@ TokenInfo Lexer::readIdentifierOrKeyword() {
 TokenInfo Lexer::readNumber() {
     std::string value;
     bool isFloat = false;
-    
-    // 16進数のチェック
+
+    // Hexadecimal
     if (source_[pos_] == '0' && pos_ + 1 < source_.size() && 
         (source_[pos_ + 1] == 'x' || source_[pos_ + 1] == 'X')) {
         value += source_[pos_++]; // '0'
@@ -213,21 +213,17 @@ TokenInfo Lexer::readNumber() {
         return {Token::INT, value, line_};
     }
     
-    // 通常の数値
     while (pos_ < source_.size() && (isDigit(source_[pos_]) || source_[pos_] == '.')) {
         if (source_[pos_] == '.') {
-            if (isFloat) break; // 2つ目のドットは別のトークン
-            // 次の文字をチェック（.. や ... との区別）
+            if (isFloat) break;
             if (pos_ + 1 < source_.size() && source_[pos_ + 1] == '.') {
-                break; // .. なので数値終了
+                break;
             }
             isFloat = true;
         }
         value += source_[pos_];
         advance();
     }
-    
-    // 科学記号法のチェック
     if (pos_ < source_.size() && (source_[pos_] == 'e' || source_[pos_] == 'E')) {
         isFloat = true;
         value += source_[pos_];
@@ -279,18 +275,16 @@ TokenInfo Lexer::readString() {
                 case '\'': value += '\''; break;
                 case '\n': value += '\n'; break;
                 case 'z':
-                    // \z は後続する空白文字をスキップ
                     advance();
                     while (pos_ < source_.size() && 
                            (source_[pos_] == ' ' || source_[pos_] == '\t' || 
                             source_[pos_] == '\r' || source_[pos_] == '\n')) {
                         advance();
                     }
-                    pos_--; // 次のadvance()で正しい位置に
+                    pos_--;
                     break;
                 default:
                     if (isDigit(c)) {
-                        // \ddd 形式の8進数エスケープ
                         int num = c - '0';
                         advance();
                         for (int i = 0; i < 2 && pos_ < source_.size() && isDigit(source_[pos_]); i++) {
@@ -302,7 +296,7 @@ TokenInfo Lexer::readString() {
                             advance();
                         }
                         value += static_cast<char>(num);
-                        pos_--; // 次のadvance()で正しい位置に
+                        pos_--;
                     } else {
                         throwError("invalid escape sequence near '\\" + std::string(1, c) + "'");
                     }
@@ -316,7 +310,6 @@ TokenInfo Lexer::readString() {
     }
     
     if (pos_ >= source_.size()) {
-        // 開始行を表示
         if (start_line == line_) {
             throwError("unfinished string near '\"'");
         } else {
@@ -324,12 +317,11 @@ TokenInfo Lexer::readString() {
         }
     }
     
-    advance(); // 終了の "
+    advance();
     return {Token::STRING, value, line_};
 }
 
 void Lexer::throwError(const std::string& msg) {
-    // Luaスタイルのエラーメッセージ: "luac: [filename:]line: message"
     throw std::runtime_error("luaoc: stdin:" + std::to_string(line_) + ": " + msg);
 }
 
