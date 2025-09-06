@@ -191,10 +191,12 @@ CppStdCout << "Hello, World!"
 
 ### Advanced Error Handling
 ```luao
+-- dangerous function (lol)
 function dangerousFunction()
     throw RuntimeError("Boom!")
 end
 
+-- basic try-catch-finally
 try
     dangerousFunction()
 catch (e: RuntimeError) do
@@ -203,11 +205,19 @@ finally
     print("Executed!")
 end
 
--- or...
-
+-- without finally
 try
     dangerousFunction()
 catch (e: RuntimeError) do
     print("Error: " .. e) -- Error: RuntimeError: Boom!
+end
+
+-- with multiple cases
+try 
+    dangerousFunction()
+catch (e: RuntimeError) do
+    print("RuntimeError occurred")
+catch (e: SomeError) do
+    print("SomeError occurred")
 end
 ```
