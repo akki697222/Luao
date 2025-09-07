@@ -1,7 +1,6 @@
 #pragma once
 
 #include <luao.hpp>
-#include <loapi.hpp>
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -9,8 +8,6 @@
 #ifndef LUAO_ENV
 #define LUAO_ENV "_ENV"
 #endif
-
-#define FIRST_RESERVED 256
 
 enum class Token 
 {
@@ -22,7 +19,7 @@ enum class Token
     PLUS, MINUS, MULTIPLY, DIVIDE, IDIV, MODULO, SHL, SHR,
     EQ, NE, LT, LE, GT, GE, ASSIGN, LPAREN, RPAREN,
     LBRACE, RBRACE, LBRACKET, RBRACKET, SEMICOLON, COLON,
-    COLON_DB, COMMA, DOT, DOT_DB, SHARP, CARET, VARARG, NULLABLE,
+    COLON_DB, COMMA, DOT, CONCAT, SHARP, CARET, VARARG, NULLABLE,
     ARROW,
     /* others */
     INT, FLOAT, STRING, IDENTIFIER, EOS
@@ -35,7 +32,7 @@ constexpr const char* TokenNames[] = {
     "PLUS","MINUS","MULTIPLY","DIVIDE","IDIV","MODULO","SHL","SHR",
     "EQ","NE","LT","LE","GT","GE","ASSIGN","LPAREN","RPAREN",
     "LBRACE","RBRACE","LBRACKET","RBRACKET","SEMICOLON","COLON",
-    "COLON_DB","COMMA","DOT","DOT_DB","SHARP","CARET","VARARG", "NULLABLE",
+    "COLON_DB","COMMA","DOT","CONCAT","SHARP","CARET","VARARG", "NULLABLE",
     "ARROW",
     "INT","FLOAT","STRING","IDENTIFIER","EOS"
 };

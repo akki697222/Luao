@@ -1,8 +1,8 @@
 /*
-    Luao Lexical analyzer - Improved error messages
+    Luao Lexical analyzer
 */
 
-#include <lolex.hpp>
+#include <lexer.hpp>
 
 Lexer::Lexer(const std::string& source) : source_(source), pos_(0), line_(1) {}
 
@@ -63,7 +63,7 @@ TokenInfo Lexer::nextToken() {
             if (peekChar() == '.') {
                 advance();
                 if (peekChar() == '.') { advance(); return {Token::VARARG, "...", line_}; }
-                return {Token::DOT_DB, "..", line_};
+                return {Token::CONCAT, "..", line_};
             }
             return {Token::DOT, ".", line_};
     }

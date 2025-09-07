@@ -20,21 +20,25 @@ If you use metatables (such as `setmetatable`, `getmetatable`, `__index`, operat
 - New features (class, type annotations, error handling, operator overloading, etc.) are available via Luao syntax.
 - You can mix traditional Lua code and Luao extensions in the same file.
 
-### Typed Function
+### Typed Function/Variable
 ```luao
 function add(a: int, b: int) -> int
     return a + b
 end
 
--- 
-function unpackVec3(v: Vec3) -> (int, int, int)
-    return v.x, v.y, v.z
+-- multiple type annotation
+function returnMultiple() -> (int, long, str)
+    return 1, 9999999, "Hello!"
 end
 
 -- the return type can be omitted.
 function customPrint(...: obj)
     print("CustomPrint: " .. tostring(...))
 end
+
+-- attributed and typed local
+local x, y: int, int = 10, 20
+local helloWorld<const>: string = "Hello, World!"
 ```
 
 ### Type casting
@@ -132,22 +136,24 @@ type ArrayIndexOutOfBoundsError: RuntimeError
 object Array;
     self _type<const>: type
     self _index<const>: table
-    self _len<const>: int
+    self _max_len<const>: int
 
-    -- length are nullable
-    function $init(_type: type, len: !int)
+    -- adding ! to type annotation makes it nullable
+    function $init(_type: type, max_len: !int)
         self._type = _type
         self._index = {}
-        if len == nil then
-            self.len = 1
-        elseif len < 1 or len > int.MAX then
+        if max_len == nil then
+            self._max_len = -1
+        elseif max_len < 1 or max_len > int.MAX then
             throw InvalidArrayLengthError("invalid length " .. len .. " (expected 1~2147483647)")
         end
     end
 
+    -- iterator
     function next()
-        local index = 1
-        return function() 
+        local index = 0
+        return function()
+            index = index + 1
             return index, self._index[index]
         end
     end
@@ -157,17 +163,19 @@ object Array;
     end
 
     function set(i: int, v: _type)
-        if i >= self._len then
+        if i >= self._max_len and self._max_len ~= -1 then
             throw ArrayIndexOutOfBoundsError("index " .. i .. " out of bounds " .. self._len)
         end
         _index[i] = v
+        self._len = #self._index
     end
 
     function remove(i: int, v: _type)
-        if i >= self._len then
+        if i >= self._len and self._max_len ~= -1 then
             throw ArrayIndexOutOfBoundsError("index " .. i .. " out of bounds " .. self._len)
         end
         table.remove(_index, i)
+        self._len = #self._index
     end
 
     function clear()
@@ -175,13 +183,22 @@ object Array;
             table.remove(_index, i)
         end
     end
+
+    function len()
+        return #self._index
+    end
+
+    -- __len metamethod
+    function __len<meta>()
+        return #self._index
+    end
 end
 ```
 
 ### Operator Overload
 ```luao
 object CppStdCout;
-    function __shl(a: CppStdCout, b: str)
+    function __shl<meta>(a: CppStdCout, b: str)
         print(b)
     end
 end
@@ -219,5 +236,60 @@ catch (e: RuntimeError) do
     print("RuntimeError occurred")
 catch (e: SomeError) do
     print("SomeError occurred")
+end
+```
+
+### Metamethod Injection
+```luao
+object Vec3;
+    self x: int
+    self y: int
+    self z: int
+    
+    function $init(x: int, y: int, z: int)
+        self.x = x
+        self.y = y
+        self.z = z
+    end
+
+    function unpack() -> (int, int, int)
+        return self.x, self.y, self.z
+    end
+
+    function __add<meta>(a: Vec3, b: Vec3) -> Vec3
+        -- type inference
+        local new = Vec3(0, 0, 0)
+        new.x = a.x + b.x
+        new.y = a.y + b.y
+        new.z = a.z + b.z
+        return new
+    end
+
+    function __sub<meta>(a: Vec3, b: Vec3) -> Vec3
+        -- type inference
+        local new = Vec3(0, 0, 0)
+        new.x = a.x - b.x
+        new.y = a.y - b.y
+        new.z = a.z - b.z
+        return new
+    end
+
+    function __mul<meta>(a: Vec3, b: Vec3) -> Vec3
+        -- type inference
+        local new = Vec3(0, 0, 0)
+        new.x = a.x * b.x
+        new.y = a.y * b.y
+        new.z = a.z * b.z
+        return new
+    end
+
+    function __div<meta>(a: Vec3, b: Vec3) -> Vec3
+        -- type inference
+        local new = Vec3(0, 0, 0)
+        new.x = a.x / b.x
+        new.y = a.y / b.y
+        new.z = a.z / b.z
+        return new
+    end
 end
 ```

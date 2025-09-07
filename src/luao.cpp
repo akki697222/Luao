@@ -1,5 +1,7 @@
 #include <iostream>
-#include <lolex.hpp>
+#include <lexer.hpp>
+#include <parser.hpp>
+#include <vector>
 
 static void print_help()
 {
@@ -9,44 +11,47 @@ static void print_help()
 
 int main(int argc, char **argv)
 {
-    std::string source = R"(
-        local x<const> = 42;
-        local $specialIdentified: string = "Hello, World!"
-        for k, v each t do
-            throw RuntimeError("Test!!")
-        end
-        -- function return type annotation
-        function add(a: int, b: int) -> int
-            return a + b
-        end
-        -- and multiple return values
-        function getValues() -> (int, string, bool)
-            return 1, "two", true
-        end
-        -- single line comment
-        --[[ 
-        long comment 
-        ]]
-    )";
+    std::vector<std::string> test_cases = {
+        // 単一の代入文
+        "x = 42",
+        // 複数変数の代入
+        "x, y = 1, 2",
+        // if文（elseなし）
+        "if true then x = 10 end",
+        // if文（elseあり）
+        "if x > 0 then x = 1 else x = 0 end",
+        // while文
+        "while x < 10 do x = x + 1 end",
+        // 複雑な式（数値、文字列、単項/二項演算子、括弧）
+        "result = -(a + b * 2) / (3 - 1) .. \"test\""
+        // break文
+        ,"while true do break end"};
 
-    Lexer lexer(source);
-    try
+    for (size_t i = 0; i < test_cases.size(); ++i)
     {
-        while (true)
+        std::cout << "=== Test Case " << (i + 1) << ": " << test_cases[i] << " ===\n";
+        try
         {
-            TokenInfo token = lexer.nextToken();
-            int tokenIndex = static_cast<int>(token.type);
-            std::cout << "Token: " << TokenNames[tokenIndex] 
-                      << "("  << tokenIndex << ")"
-                      << ", Value: \"" << token.value
-                      << "\", Line: " << token.line << std::endl;
-            if (token.type == Token::EOS)
-                break;
+            Lexer lexer(test_cases[i]);
+            std::vector<TokenInfo> tokens;
+            while (true)
+            {
+                TokenInfo token = lexer.nextToken();
+                tokens.push_back(token);
+                if (token.type == Token::EOS)
+                    break;
+            }
+
+            Parser parser(std::move(tokens));
+            auto ast = parser.parse();
+            std::cout << "AST Dump:\n"
+                      << ast->dump(0) << "\n\n";
+        }
+        catch (const std::runtime_error &e)
+        {
+            std::cerr << "Error: " << e.what() << "\n\n";
         }
     }
-    catch (const std::runtime_error &e)
-    {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+
     return 0;
 }
