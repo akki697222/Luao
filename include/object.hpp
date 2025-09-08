@@ -5,9 +5,14 @@
 #include <vector>
 #include <sstream>
 
+namespace luao {
+
 class LuaObject;
 class LuaGCObject;
 class LuaValue;
+class LuaInteger;
+class LuaNumber;
+class LuaString;
 
 class LuaObject {
 public:
@@ -130,3 +135,5 @@ private:
     LuaObject* obj;
     LuaType type;
 };
+
+} // namespace luao

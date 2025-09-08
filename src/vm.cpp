@@ -12,7 +12,31 @@ namespace luao {
 
 
 VM::VM() : pc(nullptr) {
-    stack.reserve(256);
+    stack.resize(256);
+}
+
+VM::VM(std::vector<Instruction> bytecode, std::vector<LuaValue> constants) {
+    load(std::move(bytecode), std::move(constants));
+}
+
+void VM::load(std::vector<Instruction> bytecode, std::vector<LuaValue> constants) {
+    this->bytecode = std::move(bytecode);
+    this->constants = std::move(constants);
+    this->pc = &this->bytecode[0];
+    stack.clear();
+    stack.resize(256);
+}
+
+static luaNumber get_number_from_value(const LuaValue& val) {
+    if (val.getType() == LuaType::NUMBER) {
+        if (auto* num = dynamic_cast<const LuaNumber*>(val.getObject())) {
+            return num->getValue();
+        }
+        if (auto* integer = dynamic_cast<const LuaInteger*>(val.getObject())) {
+            return static_cast<luaNumber>(integer->getValue());
+        }
+    }
+    return 0.0;
 }
 
 void VM::run() {
@@ -30,7 +54,36 @@ void VM::run() {
             case OpCode::LOADI: {
                 int a = GETARG_A(i);
                 int sbx = GETARG_sBx(i);
-                // stack[a] = LuaValue(new LuaInteger(sbx)); // This needs object implementation
+                stack[a] = LuaValue(new LuaInteger(sbx), LuaType::NUMBER);
+                break;
+            }
+            case OpCode::LOADK: {
+                int a = GETARG_A(i);
+                int bx = GETARG_Bx(i);
+                stack[a] = constants[bx];
+                break;
+            }
+            case OpCode::ADD: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i);
+                LuaValue rb = stack[b];
+                LuaValue rc = stack[c];
+
+                if (rb.getType() == LuaType::NUMBER && rc.getType() == LuaType::NUMBER) {
+                    auto* int_b = dynamic_cast<LuaInteger*>(rb.getObject());
+                    auto* int_c = dynamic_cast<LuaInteger*>(rc.getObject());
+
+                    if (int_b && int_c) {
+                        stack[a] = LuaValue(new LuaInteger(int_b->getValue() + int_c->getValue()), LuaType::NUMBER);
+                    } else {
+                        luaNumber nb = get_number_from_value(rb);
+                        luaNumber nc = get_number_from_value(rc);
+                        stack[a] = LuaValue(new LuaNumber(nb + nc), LuaType::NUMBER);
+                    }
+                } else {
+                    // Metamethods would be handled here
+                }
                 break;
             }
             case OpCode::RETURN: {

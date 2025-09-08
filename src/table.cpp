@@ -8,6 +8,8 @@
 #include <intrin.h>
 #endif
 
+namespace luao {
+
 // --- Helper Functions ---
 
 static luaNumber get_number_from_value(const LuaValue& val) {
@@ -313,3 +315,5 @@ void LuaTable::set(const LuaValue& key, const LuaValue& value) {
 void LuaTable::setMetatable(LuaTable* mt) {
     m_metatable = mt;
 }
+
+} // namespace luao

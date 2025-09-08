@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+namespace luao {
+
 class LuaTable : public LuaGCObject {
 public:
     LuaTable();
@@ -42,3 +44,5 @@ private:
     void rehash();
     void raw_insert(const LuaValue& key, const LuaValue& value);
 };
+
+} // namespace luao
