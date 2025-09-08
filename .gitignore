@@ -1,5 +1,6 @@
 # work dir
 .vscode/
+.idea/
 
 # cmake
 CMakeFiles/

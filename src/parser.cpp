@@ -1,4 +1,4 @@
-#include "parser.hpp"
+#include <parser.hpp>
 #include <sstream>
 
 void Block::addStatement(std::unique_ptr<Statement> stmt) {

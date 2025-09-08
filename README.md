@@ -57,6 +57,20 @@ print(add(x, y))
 print(add(cast(x, int), y))
 ```
 
+### Implicit Casting
+```luao
+function mul(a: long, b: long) -> long
+    return a * b
+end
+
+local x: int = 20
+local y: int = 10
+
+-- Implicitly cast to long
+-- Cannot cast from long to int
+print(mul(x, y)) -- 200
+```
+
 ### Class
 ```luao
 class Animal<virtual>;
