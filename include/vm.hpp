@@ -12,12 +12,17 @@ namespace luao {
         VM(std::vector<Instruction> bytecode, std::vector<LuaValue> constants);
         void load(std::vector<Instruction> bytecode, std::vector<LuaValue> constants);
         void run();
+        LuaValue get_stack_top();
+        const std::vector<LuaValue>& get_stack() const;
+        void set_trace(bool trace);
 
     private:
         std::vector<Instruction> bytecode;
         Instruction* pc;
         std::vector<LuaValue> stack;
+        int top;
         std::vector<LuaValue> constants;
+        bool trace_execution = false;
     };
 
 } // namespace luao
