@@ -38,7 +38,8 @@ private:
     int refCount;
 };
 
-class LuaInteger : public LuaGCObject {
+/* immediate value, so its not requires gc */
+class LuaInteger : public LuaObject {
 public:
     LuaInteger(luaInt value) : value(value) {}
     luaInt getValue() const { return value; }
@@ -50,7 +51,8 @@ private:
     luaInt value;
 };
 
-class LuaNumber : public LuaGCObject {
+/* immediate value, so its not requires gc */
+class LuaNumber : public LuaObject {
 public:
     LuaNumber(luaNumber value) : value(value) {}
     luaNumber getValue() const { return value; }
@@ -60,6 +62,19 @@ public:
     std::string typeName() const override { return "number"; }
 private:
     luaNumber value;
+};
+
+/* immediate value, so its not requires gc */
+class LuaBool : public LuaObject {
+public:
+    LuaBool(bool value) : value(value) {}
+    bool getValue() const { return value; }
+    void setValue(bool v) { value = v; }
+    LuaType getType() const override { return LuaType::BOOLEAN; }
+    std::string toString() const override { return value ? "true" : "false"; }
+    std::string typeName() const override { return "boolean"; }
+private:
+    bool value;
 };
 
 class LuaString : public LuaGCObject {

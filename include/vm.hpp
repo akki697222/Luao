@@ -5,6 +5,8 @@
 #include <vector>
 
 namespace luao {
+    static LuaBool* TRUE_OBJ = new LuaBool(true);
+    static LuaBool* FALSE_OBJ = new LuaBool(false);
 
     class VM {
     public:
