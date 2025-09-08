@@ -7,9 +7,61 @@
 
 class LuaValue {
 public:
-    LuaValue(LuaObject* obj, LuaType type) : obj(obj), type(type) {}
+    LuaValue() : obj(nullptr), type(LuaType::NIL) {}
+
+    LuaValue(LuaObject* obj, LuaType type) : obj(obj), type(type) {
+        if (isGCObject() && obj != nullptr) {
+            static_cast<LuaGCObject*>(obj)->retain();
+        }
+    }
+
+    LuaValue(const LuaValue& other) : obj(other.obj), type(other.type) {
+        if (isGCObject() && obj != nullptr) {
+            static_cast<LuaGCObject*>(obj)->retain();
+        }
+    }
+
+    LuaValue& operator=(const LuaValue& other) {
+        if (this != &other) {
+            if (isGCObject() && obj != nullptr) {
+                static_cast<LuaGCObject*>(obj)->release();
+            }
+
+            obj = other.obj;
+            type = other.type;
+
+            if (isGCObject() && obj != nullptr) {
+                static_cast<LuaGCObject*>(obj)->retain();
+            }
+        }
+        return *this;
+    }
+
+    ~LuaValue() {
+        if (isGCObject() && obj != nullptr) {
+            static_cast<LuaGCObject*>(obj)->release();
+        }
+    }
+
     LuaType getType() const { return type; }
     LuaObject* getObject() const { return obj; }
+
+    bool isGCObject() const {
+        switch (type) {
+            case LuaType::NUMBER:
+            case LuaType::STRING:
+            case LuaType::TABLE:
+            case LuaType::FUNCTION:
+            case LuaType::USERDATA:
+            case LuaType::THREAD:
+            case LuaType::OBJECT:
+            case LuaType::INSTANCE:
+            case LuaType::THROWABLE:
+                return true;
+            default:
+                return false;
+        }
+    }
 private:
     LuaObject* obj;
     LuaType type;
@@ -28,7 +80,7 @@ public:
     }
 };
 
-class LuaInteger : public LuaObject {
+class LuaInteger : public LuaGCObject {
 public:
     LuaInteger(luaInt value) : value(value) {}
     luaInt getValue() const { return value; }
@@ -40,7 +92,7 @@ private:
     luaInt value;
 };
 
-class LuaNumber : public LuaObject {
+class LuaNumber : public LuaGCObject {
 public:
     LuaNumber(luaNumber value) : value(value) {}
     luaNumber getValue() const { return value; }
