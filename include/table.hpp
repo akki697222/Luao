@@ -1,7 +1,6 @@
 #pragma once
 
 #include <object.hpp>
-#include <luao.hpp>
 #include <string>
 #include <vector>
 

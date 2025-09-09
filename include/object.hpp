@@ -1,7 +1,6 @@
 #pragma once
 
 #include <luao.hpp>
-#include <table.hpp>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -14,6 +13,8 @@ class LuaValue;
 class LuaInteger;
 class LuaNumber;
 class LuaString;
+class LuaFunction;
+class LuaTable;
 
 class LuaObject {
 public:
@@ -40,11 +41,7 @@ public:
     LuaTable* getMetatable() const { return this->metatable; }
     void setMetatable(LuaTable* metatable) { this->metatable = metatable; }
 
-    LuaValue getMetamethod(const LuaValue& key) const {
-        LuaTable* mt = this->metatable;
-        if (!mt) return LuaValue();
-        return mt->get(key);
-    }
+    LuaValue getMetamethod(const LuaValue& key) const;
 private:
     int refCount;
     LuaTable* metatable = nullptr;

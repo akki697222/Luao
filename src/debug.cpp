@@ -13,7 +13,7 @@ namespace luao {
 #define GETARG_Bx(i)    ((i) >> 15)
 #define GETARG_sBx(i)   (static_cast<int>(GETARG_Bx(i)) - 65535)
 
-std::string disassemble_instruction(Instruction i) {
+std::string disassemble_instruction(Instruction i, const LuaFunction* func) {
     std::stringstream ss;
     OpCode op = GET_OPCODE(i);
     ss << to_string(op) << " ";
@@ -24,6 +24,8 @@ std::string disassemble_instruction(Instruction i) {
         case OpCode::SUB:
         case OpCode::MUL:
         case OpCode::DIV:
+        case OpCode::GETTABLE:
+        case OpCode::SETTABLE:
             ss << GETARG_A(i) << " " << GETARG_B(i) << " " << GETARG_C(i);
             break;
         case OpCode::LOADI:
@@ -31,11 +33,17 @@ std::string disassemble_instruction(Instruction i) {
             break;
         case OpCode::LOADK:
             ss << GETARG_A(i) << " " << GETARG_Bx(i);
+            if (func) {
+                ss << " (" << func->getConstants()[GETARG_Bx(i)].getObject()->toString() << ")";
+            }
             break;
         case OpCode::RETURN:
+        case OpCode::RETURN1:
             ss << GETARG_A(i) << " " << GETARG_B(i);
             break;
         default:
+            // For other opcodes, just print A, B, C for now
+            ss << GETARG_A(i) << " " << GETARG_B(i) << " " << GETARG_C(i);
             break;
     }
     return ss.str();

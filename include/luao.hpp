@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vm.hpp>
-#include <table.hpp>
-#include <object.hpp>
 #include <iostream>
 
 /* Infomation */
@@ -54,8 +51,5 @@ enum class LuaType {
 };
 
 namespace luao {
-    LuaValue* get_metamethod(const LuaTable& mt, LuaValue& index) {
-        LuaValue mm = mt.get(index);
 
-    }
 }
