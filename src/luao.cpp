@@ -178,6 +178,73 @@ void test_closure() {
 }
 
 
+void test_globals() {
+    std::cout << "--- Testing GLOBALS ---" << std::endl;
+
+    std::vector<Instruction> bytecode = {
+        CREATE_ABx(static_cast<int>(OpCode::LOADI), 0, CREATE_sBx(123)),
+        CREATE_ABx(static_cast<int>(OpCode::SETGLOBAL), 0, 0),
+        CREATE_ABx(static_cast<int>(OpCode::GETGLOBAL), 1, 0),
+        CREATE_A(static_cast<int>(OpCode::RETURN1), 1)
+    };
+    std::vector<LuaValue> constants = {
+        LuaValue(new LuaString("my_global"), LuaType::STRING)
+    };
+    LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
+
+    VM vm;
+    vm.load(main_closure);
+    vm.set_trace(true);
+    vm.run();
+
+    LuaValue result = vm.get_stack_top();
+    assert(result.getType() == LuaType::NUMBER);
+    auto* int_res = dynamic_cast<LuaInteger*>(result.getObject());
+    assert(int_res != nullptr);
+    assert(int_res->getValue() == 123);
+
+    std::cout << "GLOBALS test passed." << std::endl;
+}
+
+void test_function_definition() {
+    std::cout << "--- Testing FUNCTION DEFINITION ---" << std::endl;
+
+    std::vector<Instruction> func_bytecode = {
+        CREATE_ABx(static_cast<int>(OpCode::LOADI), 0, CREATE_sBx(99)),
+        CREATE_A(static_cast<int>(OpCode::RETURN1), 0)
+    };
+    std::vector<LuaValue> func_constants = {};
+    LuaFunction* func_proto = new LuaFunction(func_bytecode, func_constants);
+
+    std::vector<Instruction> main_bytecode = {
+        CREATE_ABx(static_cast<int>(OpCode::CLOSURE), 0, 0),
+        CREATE_ABx(static_cast<int>(OpCode::SETGLOBAL), 0, 1), // G["my_func"] = R0
+        CREATE_ABx(static_cast<int>(OpCode::GETGLOBAL), 1, 1), // R1 = G["my_func"]
+        CREATE_ABC(static_cast<int>(OpCode::CALL), 1, 1, 2),   // R1()
+        CREATE_A(static_cast<int>(OpCode::RETURN1), 1)      // return R1
+    };
+    std::vector<LuaValue> main_constants = {
+        LuaValue(func_proto, LuaType::PROTOTYPE),
+        LuaValue(new LuaString("my_func"), LuaType::STRING)
+    };
+    LuaFunction* main_func = new LuaFunction(main_bytecode, main_constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
+
+    VM vm;
+    vm.load(main_closure);
+    vm.set_trace(true);
+    vm.run();
+
+    LuaValue result = vm.get_stack_top();
+    assert(result.getType() == LuaType::NUMBER);
+    auto* int_res = dynamic_cast<LuaInteger*>(result.getObject());
+    assert(int_res != nullptr);
+    assert(int_res->getValue() == 99);
+
+    std::cout << "FUNCTION DEFINITION test passed." << std::endl;
+}
+
 int main(int argc, char **argv)
 {
     test_add();
@@ -186,6 +253,8 @@ int main(int argc, char **argv)
     test_div();
     test_loadk();
     test_closure();
+    test_globals();
+    test_function_definition();
 
     std::cout << "All tests passed." << std::endl;
 

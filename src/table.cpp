@@ -122,12 +122,6 @@ void LuaTable::rehash() {
         }
     }
 
-    if (all_nodes.empty()) {
-        m_array.clear();
-        m_nodes.clear();
-        return;
-    }
-
     // 2. Count integer keys in logarithmic bins
     constexpr int MAX_LOG_2 = sizeof(luaInt) * 8;
     std::vector<int> nums(MAX_LOG_2, 0);

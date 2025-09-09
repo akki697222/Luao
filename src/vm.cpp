@@ -2,7 +2,6 @@
 #include "debug.hpp"
 #include <table.hpp>
 #include <iostream>
-#include <stdexcept>
 
 // metamethod key shortcuts
 namespace mm {
@@ -39,6 +38,7 @@ namespace luao {
 
 VM::VM() : top(0) {
     stack.resize(256);
+    globals_ = LuaValue(new LuaTable(), LuaType::TABLE);
 }
 
 void VM::load(LuaClosure* main_closure) {
@@ -468,28 +468,48 @@ void VM::run() {
                 case OpCode::RETURN: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
-                    int n_results = b - 1;
-                    if (n_results < 0) n_results = top - (frame->stack_base + a); // variadic results
+                    int n_results = b > 0 ? b - 1 : 0; // Simplified for now
 
-                    int caller_base = call_stack.size() > 1 ? call_stack[call_stack.size() - 2].stack_base : 0;
-
-                    for (int j = 0; j < n_results; j++) {
-                        stack[caller_base + j] = stack[frame->stack_base + a + j];
+                    if (call_stack.size() > 1) {
+                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
+                        Instruction call_i = *(caller_frame.pc - 1);
+                        int result_reg = GETARG_A(call_i);
+                        for (int j = 0; j < n_results; j++) {
+                            stack[caller_frame.stack_base + result_reg + j] = stack[frame->stack_base + a + j];
+                        }
+                        top = caller_frame.stack_base + result_reg + n_results;
+                    } else {
+                        // Returning from top-level
+                        for (int j = 0; j < n_results; j++) {
+                            stack[j] = stack[frame->stack_base + a + j];
+                        }
+                        top = n_results;
                     }
-                    top = caller_base + n_results;
                     call_stack.pop_back();
                     break;
                 }
                 case OpCode::RETURN0: {
-                    top = call_stack.size() > 1 ? call_stack[call_stack.size() - 2].stack_base : 0;
+                    if (call_stack.size() > 1) {
+                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
+                        top = caller_frame.stack_base + GETARG_A(*(caller_frame.pc - 1));
+                    } else {
+                        top = 0;
+                    }
                     call_stack.pop_back();
                     break;
                 }
                 case OpCode::RETURN1: {
                     int a = GETARG_A(i);
-                    int caller_base = call_stack.size() > 1 ? call_stack[call_stack.size() - 2].stack_base : 0;
-                    stack[caller_base] = stack[frame->stack_base + a];
-                    top = caller_base + 1;
+                    if (call_stack.size() > 1) {
+                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
+                        Instruction call_i = *(caller_frame.pc - 1);
+                        int result_reg = GETARG_A(call_i);
+                        stack[caller_frame.stack_base + result_reg] = stack[frame->stack_base + a];
+                        top = caller_frame.stack_base + result_reg + 1;
+                    } else {
+                        stack[0] = stack[frame->stack_base + a];
+                        top = 1;
+                    }
                     call_stack.pop_back();
                     break;
                 }
@@ -503,7 +523,7 @@ void VM::run() {
                         stack[frame->stack_base + a] = LuaValue(closure, LuaType::FUNCTION);
                     } else {
                         // Should not happen with correct bytecode
-                        throw std::runtime_error("Attempt to create closure from non-prototype value");
+                        std::cerr << "Attempt to create closure from non-prototype value" << std::endl;
                     }
                     break;
                 }
@@ -513,6 +533,23 @@ void VM::run() {
                 }
                 case OpCode::SETUPVAL: {
                     // TODO: Implement
+                    break;
+                }
+                case OpCode::GETGLOBAL: {
+                    int a = GETARG_A(i);
+                    int bx = GETARG_Bx(i);
+                    LuaValue key = func->getConstants()[bx];
+                    auto* globals = static_cast<LuaTable*>(globals_.getObject());
+                    stack[frame->stack_base + a] = globals->get(key);
+                    break;
+                }
+                case OpCode::SETGLOBAL: {
+                    int a = GETARG_A(i);
+                    int bx = GETARG_Bx(i);
+                    LuaValue key = func->getConstants()[bx];
+                    LuaValue val = stack[frame->stack_base + a];
+                    auto* globals = static_cast<LuaTable*>(globals_.getObject());
+                    globals->set(key, val);
                     break;
                 }
                 default: {

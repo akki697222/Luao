@@ -35,6 +35,7 @@ namespace luao {
         bool as_bool(const LuaValue& value);
     private:
         LuaValue main_function_;
+        LuaValue globals_;
         std::vector<CallInfo> call_stack;
         std::vector<LuaValue> stack;
         int top;
