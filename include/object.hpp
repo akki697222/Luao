@@ -1,6 +1,7 @@
 #pragma once
 
 #include <luao.hpp>
+#include <table.hpp>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -34,8 +35,19 @@ public:
 
     void retain() { ++refCount; }
     void release() { if (--refCount == 0) delete this; }
+
+    // metatables
+    LuaTable* getMetatable() const { return this->metatable; }
+    void setMetatable(LuaTable* metatable) { this->metatable = metatable; }
+
+    LuaValue getMetamethod(const LuaValue& key) const {
+        LuaTable* mt = this->metatable;
+        if (!mt) return LuaValue();
+        return mt->get(key);
+    }
 private:
     int refCount;
+    LuaTable* metatable = nullptr;
 };
 
 /* immediate value, so its not requires gc */
@@ -129,10 +141,16 @@ public:
 
     LuaType getType() const { return type; }
     LuaObject* getObject() const { return obj; }
+    std::string typeName() const {
+        if (obj) {
+            return obj->typeName();
+        } else {
+            return "nil";
+        }
+    }
 
     bool isGCObject() const {
         switch (type) {
-            case LuaType::NUMBER:
             case LuaType::STRING:
             case LuaType::TABLE:
             case LuaType::FUNCTION:

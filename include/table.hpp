@@ -16,11 +16,14 @@ public:
     std::string typeName() const override { return "table"; }
 
     LuaValue get(const LuaValue& key) const;
+    // index access for GETI
+    LuaValue get(int index) const;
     void set(const LuaValue& key, const LuaValue& value);
+    // index access for SETI
+    void set(int index, const LuaValue& value);
 
-    LuaTable* getMetatable() const { return m_metatable; }
-    void setMetatable(LuaTable* mt);
-
+    LuaValue vlen() const;
+    int ilen() const;
 private:
     struct Node {
         LuaValue key;
@@ -34,7 +37,6 @@ private:
     std::vector<LuaValue> m_array;
     std::vector<Node> m_nodes;
     size_t m_last_free_hint = 0;
-    LuaTable* m_metatable = nullptr;
 
     // private helpers
     Node* main_position(const LuaValue& key);

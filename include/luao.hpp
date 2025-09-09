@@ -1,5 +1,10 @@
 #pragma once
 
+#include <vm.hpp>
+#include <table.hpp>
+#include <object.hpp>
+#include <iostream>
+
 /* Infomation */
 #define LUAO_VERSION "Luao 1.0"
 #define LUAO_COPYRIGHT "Copyright (C) 2025 akki697222"
@@ -27,6 +32,8 @@
 
 #define LUAO_NUMTYPES		13
 
+#define LUAERR(msg) std::cerr << msg << std::endl
+
 typedef long long luaInt;
 typedef double luaNumber;
 
@@ -45,3 +52,10 @@ enum class LuaType {
     TYPE = LUAO_TTYPE,             /* Type Object */
     THROWABLE = LUAO_TTHROWABLE    /* Throwable */
 };
+
+namespace luao {
+    LuaValue* get_metamethod(const LuaTable& mt, LuaValue& index) {
+        LuaValue mm = mt.get(index);
+
+    }
+}

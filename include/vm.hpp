@@ -1,7 +1,7 @@
 #pragma once
 
 #include "opcodes.hpp"
-#include "object.hpp"
+#include <object.hpp>
 #include <vector>
 
 namespace luao {
@@ -17,7 +17,7 @@ namespace luao {
         LuaValue get_stack_top();
         const std::vector<LuaValue>& get_stack() const;
         void set_trace(bool trace);
-
+        bool as_bool(const LuaValue& value);
     private:
         std::vector<Instruction> bytecode;
         Instruction* pc;

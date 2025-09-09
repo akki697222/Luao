@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <luao.hpp>
 #ifdef _MSC_VER
 #include <intrin.h>
 #endif
@@ -220,9 +221,20 @@ LuaValue LuaTable::get(const LuaValue& key) const {
     return LuaValue();
 }
 
+LuaValue LuaTable::get(int index) const {
+    if (index >= 1 && index <= m_array.size()) {
+        return m_array[index - 1];
+    }
+    return LuaValue();
+}
+
 void LuaTable::set(const LuaValue& key, const LuaValue& value) {
-    if (key.getType() == LuaType::NIL || (key.getType() == LuaType::NUMBER && std::isnan(get_number_from_value(key)))) {
-        return; // Invalid key
+    if (key.getType() == LuaType::NIL) {
+        LUAERR("table index is nil");
+        return;
+    } else if (key.getType() == LuaType::NUMBER && std::isnan(get_number_from_value(key))) {
+        LUAERR("table index is NaN");
+        return;
     }
 
     // Handle array part
@@ -312,8 +324,31 @@ void LuaTable::set(const LuaValue& key, const LuaValue& value) {
     }
 }
 
-void LuaTable::setMetatable(LuaTable* mt) {
-    m_metatable = mt;
+void LuaTable::set(int index, const LuaValue& value) {
+    if (index < 1) {
+        return;
+    }
+
+    if (index <= m_array.size()) {
+        m_array[index - 1] = value;
+        return;
+    }
+
+    if (index == m_array.size() + 1) {
+        m_array.push_back(value);
+        return;
+    }
+
+    LuaValue key(new LuaInteger(index), LuaType::NUMBER);
+    set(key, value);
+}
+
+LuaValue LuaTable::vlen() const {
+    return LuaValue(new LuaInteger(m_array.size()), LuaType::NUMBER);
+}
+
+int LuaTable::ilen() const {
+    return m_array.size();
 }
 
 } // namespace luao

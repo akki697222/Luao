@@ -3,6 +3,27 @@
 #include <table.hpp>
 #include <iostream>
 
+// metamethod key shortcuts
+namespace mm {
+    static const luao::LuaValue __add       = LuaValue(new luao::LuaString("__add"),       LuaType::STRING);
+    static const luao::LuaValue __sub       = LuaValue(new luao::LuaString("__sub"),       LuaType::STRING);
+    static const luao::LuaValue __mul       = LuaValue(new luao::LuaString("__mul"),       LuaType::STRING);
+    static const luao::LuaValue __div       = LuaValue(new luao::LuaString("__div"),       LuaType::STRING);
+    static const luao::LuaValue __mod       = LuaValue(new luao::LuaString("__mod"),       LuaType::STRING);
+    static const luao::LuaValue __pow       = LuaValue(new luao::LuaString("__pow"),       LuaType::STRING);
+    static const luao::LuaValue __unm       = LuaValue(new luao::LuaString("__unm"),       LuaType::STRING);
+    static const luao::LuaValue __len       = LuaValue(new luao::LuaString("__len"),       LuaType::STRING);
+    static const luao::LuaValue __eq        = LuaValue(new luao::LuaString("__eq"),        LuaType::STRING);
+    static const luao::LuaValue __lt        = LuaValue(new luao::LuaString("__lt"),        LuaType::STRING);
+    static const luao::LuaValue __le        = LuaValue(new luao::LuaString("__le"),        LuaType::STRING);
+    static const luao::LuaValue __index     = LuaValue(new luao::LuaString("__index"),     LuaType::STRING);
+    static const luao::LuaValue __newindex  = LuaValue(new luao::LuaString("__newindex"),  LuaType::STRING);
+    static const luao::LuaValue __call      = LuaValue(new luao::LuaString("__call"),      LuaType::STRING);
+    static const luao::LuaValue __tostring  = LuaValue(new luao::LuaString("__tostring"),  LuaType::STRING);
+    static const luao::LuaValue __concat    = LuaValue(new luao::LuaString("__concat"),    LuaType::STRING);
+    static const luao::LuaValue __metatable = LuaValue(new luao::LuaString("__metatable"), LuaType::STRING);
+}
+
 namespace luao {
 
 #define GET_OPCODE(i)   (static_cast<OpCode>(((i) >> 0) & 0x7F))
@@ -14,7 +35,6 @@ namespace luao {
 #define GETARG_sC(i)    (static_cast<int8_t>(GETARG_C(i)))
 #define GETARG_Bx(i)    ((i) >> 15)
 #define GETARG_sBx(i)   (static_cast<int>(GETARG_Bx(i)) - 65535)
-
 
 VM::VM() : pc(nullptr), top(0) {
     stack.resize(256);
@@ -58,6 +78,18 @@ static luaNumber get_number_from_value(const LuaValue& val) {
         }
     }
     return 0.0;
+}
+
+bool VM::as_bool(const LuaValue& value) {
+    if (value.getType() == LuaType::NIL) {
+        return false;
+    }
+    if (value.getType() == LuaType::BOOLEAN) {
+        if (auto* b = dynamic_cast<const LuaBool*>(value.getObject())) {
+            return b->getValue();
+        }
+    }
+    return true;
 }
 
 void VM::run() {
@@ -129,13 +161,149 @@ void VM::run() {
             // case OpCode::GETUPVAL: {}
             // case OpCode::SETUPVAL: {}
             // case OpCode::GETTABUP: {}
-            // case OpCode::GETTABLE: {}
-            // case OpCode::GETI: {}
-            // case OpCode::GETFIELD: {}
+            case OpCode::GETTABLE: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i);
+
+                LuaValue t = stack[b];
+                LuaValue k = stack[c];
+
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        stack[a] = table->get(k);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+            }
+            case OpCode::GETI: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i);
+
+                LuaValue t = stack[b];
+
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        stack[a] = table->get(c);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+            
+                top = a + 1;
+                break;
+            }
+            case OpCode::GETFIELD: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i);
+
+                LuaValue t = stack[b];
+                LuaValue k = constants[c];
+
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        stack[a] = table->get(k);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+            }
             // case OpCode::SETTABUP: {}
-            // case OpCode::SETTABLE: {}
-            // case OpCode::SETI: {}
-            // case OpCode::SETFIELD: {}
+            case OpCode::SETTABLE: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i); 
+                        
+                LuaValue t = stack[a];
+                LuaValue k = stack[b]; 
+                LuaValue v = stack[c];
+                        
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        table->set(k, v);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+            
+                break;
+            }
+            case OpCode::SETI: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i);
+
+                LuaValue t = stack[a];
+                LuaValue v = stack[c];
+
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        table->set(b, v);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+                
+                break;
+            }
+            case OpCode::SETFIELD: {
+                int a = GETARG_A(i);
+                int b = GETARG_B(i);
+                int c = GETARG_C(i); 
+                        
+                LuaValue t = stack[a];
+                LuaValue k = constants[b]; 
+                LuaValue v = stack[c];
+                        
+                if (t.getType() == LuaType::TABLE) {
+                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        table->set(k, v);
+                    } else {
+                        // metamethod
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        // metamethod
+                    } else {
+                        std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                    }
+                }
+            
+                break;
+            }
             case OpCode::NEWTABLE: {
                 int a = GETARG_A(i); /* args are 'A B C k' */
                 int b = GETARG_B(i); /* Array initial size, unused */
@@ -214,6 +382,7 @@ void VM::run() {
                     }
                 } else {
                     // Metamethods would be handled here
+
                 }
                 top = a + 1;
                 break;
@@ -229,10 +398,75 @@ void VM::run() {
             // case OpCode::MMBIN: {}
             // case OpCode::MMBINI: {}
             // case OpCode::MMBINK: {}
-            // case OpCode::UNM: {}
-            // case OpCode::BNOT: {}
-            // case OpCode::NOT: {}
-            // case OpCode::LEN: {}
+            case OpCode::UNM:
+            case OpCode::BNOT: {
+                int a = GETARG_A(i); /* args are 'A B' */
+                int b = GETARG_B(i);
+
+                LuaValue rb = stack[b];
+
+                std::string err = op == OpCode::UNM ? "arithmetic" : "bitwise";
+                if (rb.getType() == LuaType::NUMBER) {
+                    if (auto* int_b = dynamic_cast<LuaInteger*>(rb.getObject())) {
+                        luaInt res = int_b->getValue();
+                        if (op == OpCode::UNM) {
+                            res = -res;
+                        } else {
+                            res = ~res;
+                        }
+                        stack[a] = LuaValue(new LuaInteger(res), LuaType::NUMBER);
+                    } else if (op == OpCode::UNM) {
+                        auto* num_b = dynamic_cast<LuaNumber*>(rb.getObject());
+                        luaNumber res = -num_b->getValue();
+                        stack[a] = LuaValue(new LuaNumber(res), LuaType::NUMBER);
+                    } else {
+                        std::cerr << "attempt to perform " << err << " operation on a " << rb.typeName() << " value" << std::endl;
+                    }
+                } else {
+                    std::cerr << "attempt to perform " << err << " operation on a " << rb.typeName() << " value" << std::endl;
+                }
+            
+                top = a + 1;
+                break;
+            }
+            case OpCode::NOT: {
+                int a = GETARG_A(i); /* args are 'A B' */
+                int b = GETARG_B(i);
+            
+                stack[a] = LuaValue(as_bool(stack[b]) ? FALSE_OBJ : TRUE_OBJ, LuaType::BOOLEAN);
+                top = a + 1;
+                break;
+            }
+            case OpCode::LEN: {
+                int a = GETARG_A(i); /* args are 'A B' */
+                int b = GETARG_B(i);
+
+                LuaValue rb = stack[b];
+
+                if (rb.getType() == LuaType::STRING) {
+                    auto* str = dynamic_cast<LuaString*>(rb.getObject());
+                    stack[a] = LuaValue(new LuaInteger(str->getValue().size()), LuaType::NUMBER);
+                } else if (rb.getType() == LuaType::TABLE) {
+                    auto* table = dynamic_cast<LuaTable*>(rb.getObject());
+                    // metamethod
+                    LuaValue mm = table->getMetamethod(mm::__len);
+                    if (mm.getObject()) {
+                        
+                    } else {
+                        stack[a] = table->vlen();
+                    }
+                } else {
+                    if (auto* gc = dynamic_cast<LuaGCObject*>(rb.getObject())) {
+                        // metamethod
+                        LuaValue mm = gc->getMetamethod(mm::__len);
+                    } else {
+                        std::cerr << "attempt to get length of a " << rb.typeName() << " value" << std::endl;
+                    }
+                }
+            
+                top = a + 1;
+                break;
+            }
             case OpCode::CONCAT: {
                 int a = GETARG_A(i); /* args are 'A B C' */
                 int b = GETARG_B(i);
@@ -268,7 +502,14 @@ void VM::run() {
             }
             // case OpCode::CLOSE: {}
             // case OpCode::TBC: {}
-            // case OpCode::JMP: {}
+            case OpCode::JMP: {
+                // J = A
+                int sJ = GETARG_sA(i);
+                pc += sJ - 1;
+                if (trace_execution) {
+                    std::cout << "VM: JMP: Jumping to pc " << pc << std::endl;
+                }
+            }
             // case OpCode::EQ: {}
             // case OpCode::LT: {}
             // case OpCode::LE: {}
