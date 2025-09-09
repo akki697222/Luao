@@ -5,6 +5,7 @@
 #include "opcodes.hpp"
 #include "object.hpp"
 #include "function.hpp"
+#include "closure.hpp"
 
 using namespace luao;
 
@@ -31,8 +32,9 @@ void test_add() {
     };
     std::vector<LuaValue> constants = {};
     LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
     VM vm;
-    vm.load(main_func);
+    vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     LuaValue result = vm.get_stack_top();
@@ -53,8 +55,9 @@ void test_sub() {
     };
     std::vector<LuaValue> constants = {};
     LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
     VM vm;
-    vm.load(main_func);
+    vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     LuaValue result = vm.get_stack_top();
@@ -75,8 +78,9 @@ void test_mul() {
     };
     std::vector<LuaValue> constants = {};
     LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
     VM vm;
-    vm.load(main_func);
+    vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     LuaValue result = vm.get_stack_top();
@@ -97,8 +101,9 @@ void test_div() {
     };
     std::vector<LuaValue> constants = {};
     LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
     VM vm;
-    vm.load(main_func);
+    vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     LuaValue result = vm.get_stack_top();
@@ -122,8 +127,9 @@ void test_loadk() {
         LuaValue(new LuaInteger(200), LuaType::NUMBER)
     };
     LuaFunction* main_func = new LuaFunction(bytecode, constants);
+    LuaClosure* main_closure = new LuaClosure(main_func);
     VM vm;
-    vm.load(main_func);
+    vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     LuaValue result = vm.get_stack_top();
@@ -134,33 +140,31 @@ void test_loadk() {
     std::cout << "LOADK test passed." << std::endl;
 }
 
-void test_call() {
-    std::cout << "--- Testing CALL ---" << std::endl;
+void test_closure() {
+    std::cout << "--- Testing CLOSURE ---" << std::endl;
 
-    // Callee function: adds its first two arguments
-    std::vector<Instruction> add_func_bytecode = {
-        // args are at stack base 0 and 1
-        CREATE_ABC(static_cast<int>(OpCode::ADD), 2, 0, 1), // R2 = R0 + R1
-        CREATE_A(static_cast<int>(OpCode::RETURN1), 2) // return R2
+    // Child function prototype
+    std::vector<Instruction> child_bytecode = {
+        CREATE_ABx(static_cast<int>(OpCode::LOADI), 0, CREATE_sBx(42)), // Load a constant value
+        CREATE_A(static_cast<int>(OpCode::RETURN1), 0)
     };
-    std::vector<LuaValue> add_func_constants = {};
-    LuaFunction* add_func = new LuaFunction(add_func_bytecode, add_func_constants);
+    std::vector<LuaValue> child_constants = {};
+    LuaFunction* child_proto = new LuaFunction(child_bytecode, child_constants);
 
-    // Main function
-    std::vector<Instruction> main_bytecode = {
-        CREATE_ABx(static_cast<int>(OpCode::LOADK), 0, 0), // R0 = K0 (the add function)
-        CREATE_ABx(static_cast<int>(OpCode::LOADI), 1, CREATE_sBx(10)), // R1 = 10
-        CREATE_ABx(static_cast<int>(OpCode::LOADI), 2, CREATE_sBx(20)), // R2 = 20
-        CREATE_ABC(static_cast<int>(OpCode::CALL), 0, 3, 2), // R0 = R0(R1, R2). 3->2 args (B-1), 2->1 result (C-1)
-        CREATE_A(static_cast<int>(OpCode::RETURN1), 0) // return R0
+    // Parent function
+    std::vector<Instruction> parent_bytecode = {
+        CREATE_ABx(static_cast<int>(OpCode::CLOSURE), 0, 0), // R0 = closure(K0)
+        CREATE_ABC(static_cast<int>(OpCode::CALL), 0, 1, 2), // R0 = R0()
+        CREATE_A(static_cast<int>(OpCode::RETURN1), 0)
     };
-    std::vector<LuaValue> main_constants = {
-        LuaValue(add_func, LuaType::FUNCTION)
+    std::vector<LuaValue> parent_constants = {
+        LuaValue(child_proto, LuaType::PROTOTYPE)
     };
-    LuaFunction* main_func = new LuaFunction(main_bytecode, main_constants);
+    LuaFunction* parent_func = new LuaFunction(parent_bytecode, parent_constants);
+    LuaClosure* parent_closure = new LuaClosure(parent_func);
 
     VM vm;
-    vm.load(main_func);
+    vm.load(parent_closure);
     vm.set_trace(true);
     vm.run();
 
@@ -168,10 +172,11 @@ void test_call() {
     assert(result.getType() == LuaType::NUMBER);
     auto* int_res = dynamic_cast<LuaInteger*>(result.getObject());
     assert(int_res != nullptr);
-    assert(int_res->getValue() == 30);
+    assert(int_res->getValue() == 42);
 
-    std::cout << "CALL test passed." << std::endl;
+    std::cout << "CLOSURE test passed." << std::endl;
 }
+
 
 int main(int argc, char **argv)
 {
@@ -180,7 +185,7 @@ int main(int argc, char **argv)
     test_mul();
     test_div();
     test_loadk();
-    test_call();
+    test_closure();
 
     std::cout << "All tests passed." << std::endl;
 

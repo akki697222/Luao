@@ -26,8 +26,9 @@
 #define LUAO_TINSTANCE      10 /* Class Instance */
 #define LUAO_TTYPE          11 /* Type Object */
 #define LUAO_TTHROWABLE     12 /* Throwable */
+#define LUAO_TPROTOTYPE     13
 
-#define LUAO_NUMTYPES		13
+#define LUAO_NUMTYPES		14
 
 #define LUAERR(msg) std::cerr << msg << std::endl
 
@@ -47,7 +48,8 @@ enum class LuaType {
     OBJECT = LUAO_TOBJECT,         /* Object/Class */
     INSTANCE = LUAO_TINSTANCE,     /* Class Instance */
     TYPE = LUAO_TTYPE,             /* Type Object */
-    THROWABLE = LUAO_TTHROWABLE    /* Throwable */
+    THROWABLE = LUAO_TTHROWABLE,   /* Throwable */
+    PROTOTYPE = LUAO_TPROTOTYPE
 };
 
 namespace luao {

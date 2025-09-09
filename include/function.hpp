@@ -12,8 +12,8 @@ public:
     LuaFunction(std::vector<Instruction> bytecode, std::vector<LuaValue> constants)
         : bytecode(std::move(bytecode)), constants(std::move(constants)) {}
 
-    LuaType getType() const override { return LuaType::FUNCTION; }
-    std::string typeName() const override { return "function"; }
+    LuaType getType() const override { return LuaType::PROTOTYPE; }
+    std::string typeName() const override { return "prototype"; }
 
     const std::vector<Instruction>& getBytecode() const { return bytecode; }
     const std::vector<LuaValue>& getConstants() const { return constants; }

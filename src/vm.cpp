@@ -40,14 +40,14 @@ VM::VM() : top(0) {
     stack.resize(256);
 }
 
-void VM::load(LuaFunction* main_function) {
-    main_function_ = LuaValue(main_function, LuaType::FUNCTION);
+void VM::load(LuaClosure* main_closure) {
+    main_function_ = LuaValue(main_closure, LuaType::FUNCTION);
     call_stack.clear();
     stack.clear();
     stack.resize(256);
     top = 0;
 
-    call_stack.emplace_back(main_function, &main_function->getBytecode()[0], 0);
+    call_stack.emplace_back(main_closure, &main_closure->getFunction()->getBytecode()[0], 0);
 }
 
 LuaValue VM::get_stack_top() {
@@ -91,13 +91,14 @@ bool VM::as_bool(const LuaValue& value) {
 
 void VM::run() {
     while (!call_stack.empty()) {
-        CallFrame* frame = &call_stack.back();
+        CallInfo* frame = &call_stack.back();
         const Instruction* pc = frame->pc;
+        LuaFunction* func = frame->closure->getFunction();
 
         for (;;) {
             Instruction i = *pc++;
             if (trace_execution) {
-                std::cout << disassemble_instruction(i, frame->func) << std::endl;
+                std::cout << disassemble_instruction(i, func) << std::endl;
             }
             OpCode op = GET_OPCODE(i);
 
@@ -125,7 +126,7 @@ void VM::run() {
                 case OpCode::LOADK: {
                     int a = GETARG_A(i); /* args are 'A Bx' */
                     int bx = GETARG_Bx(i);
-                    stack[frame->stack_base + a] = frame->func->getConstants()[bx];
+                    stack[frame->stack_base + a] = func->getConstants()[bx];
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -214,7 +215,7 @@ void VM::run() {
                     int c = GETARG_C(i);
 
                     LuaValue t = stack[frame->stack_base + b];
-                    LuaValue k = frame->func->getConstants()[c];
+                    LuaValue k = func->getConstants()[c];
 
                     if (t.getType() == LuaType::TABLE) {
                         if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
@@ -287,7 +288,7 @@ void VM::run() {
                     int c = GETARG_C(i);
 
                     LuaValue t = stack[frame->stack_base + a];
-                    LuaValue k = frame->func->getConstants()[b];
+                    LuaValue k = func->getConstants()[b];
                     LuaValue v = stack[frame->stack_base + c];
 
                     if (t.getType() == LuaType::TABLE) {
@@ -454,9 +455,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     LuaValue func_val = stack[frame->stack_base + a];
                     if (func_val.getType() == LuaType::FUNCTION) {
-                        auto* func = dynamic_cast<LuaFunction*>(func_val.getObject());
+                        auto* closure = dynamic_cast<LuaClosure*>(func_val.getObject());
                         frame->pc = pc;
-                        call_stack.emplace_back(func, &func->getBytecode()[0], frame->stack_base + a + 1);
+                        call_stack.emplace_back(closure, &closure->getFunction()->getBytecode()[0], frame->stack_base + a + 1);
                         break; // Continue to the new frame's execution loop
                     } else {
                         std::cerr << "Attempt to call a " << func_val.typeName() << " value" << std::endl;
@@ -489,6 +490,28 @@ void VM::run() {
                     stack[caller_base] = stack[frame->stack_base + a];
                     top = caller_base + 1;
                     call_stack.pop_back();
+                    break;
+                }
+                case OpCode::CLOSURE: {
+                    int a = GETARG_A(i);
+                    int bx = GETARG_Bx(i);
+                    LuaValue proto_val = func->getConstants()[bx];
+                    if (proto_val.getType() == LuaType::PROTOTYPE) {
+                        auto* proto = dynamic_cast<LuaFunction*>(proto_val.getObject());
+                        LuaClosure* closure = new LuaClosure(proto);
+                        stack[frame->stack_base + a] = LuaValue(closure, LuaType::FUNCTION);
+                    } else {
+                        // Should not happen with correct bytecode
+                        std::cerr << "Attempt to create closure from non-prototype value" << std::endl;
+                    }
+                    break;
+                }
+                case OpCode::GETUPVAL: {
+                    // TODO: Implement
+                    break;
+                }
+                case OpCode::SETUPVAL: {
+                    // TODO: Implement
                     break;
                 }
                 default: {
