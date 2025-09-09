@@ -2,6 +2,7 @@
 #include "debug.hpp"
 #include <table.hpp>
 #include <iostream>
+#include <stdexcept>
 
 // metamethod key shortcuts
 namespace mm {
@@ -502,7 +503,7 @@ void VM::run() {
                         stack[frame->stack_base + a] = LuaValue(closure, LuaType::FUNCTION);
                     } else {
                         // Should not happen with correct bytecode
-                        std::cerr << "Attempt to create closure from non-prototype value" << std::endl;
+                        throw std::runtime_error("Attempt to create closure from non-prototype value");
                     }
                     break;
                 }
