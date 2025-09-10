@@ -1,6 +1,8 @@
 # work dir
 .vscode/
 .idea/
+.cache/
+.cursor/
 
 # cmake
 CMakeFiles/

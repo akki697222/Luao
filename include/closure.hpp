@@ -1,8 +1,8 @@
 #pragma once
 
-#include "object.hpp"
-#include "function.hpp"
-#include "upvalue.hpp"
+#include <object.hpp>
+#include <function.hpp>
+#include <upvalue.hpp>
 #include <vector>
 
 namespace luao {

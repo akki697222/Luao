@@ -30,8 +30,6 @@ namespace luao {
         LOADNIL,      /* A B     R[A], R[A+1], ..., R[A+B] := nil                */
         GETUPVAL,     /* A B     R[A] := UpValue[B]                              */
         SETUPVAL,     /* A B     UpValue[B] := R[A]                              */
-        GETGLOBAL,    /* A Bx    R[A] := G[K[Bx]]                                */
-        SETGLOBAL,    /* A Bx    G[K[Bx]] := R[A]                                */
         GETTABUP,     /* A B C   R[A] := UpValue[B][K[C]:shortstring]            */
         GETTABLE,     /* A B C   R[A] := R[B][R[C]]                              */
         GETI,         /* A B C   R[A] := R[B][C]                                 */

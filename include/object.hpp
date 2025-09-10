@@ -157,7 +157,6 @@ public:
             case LuaType::OBJECT:
             case LuaType::INSTANCE:
             case LuaType::THROWABLE:
-            case LuaType::PROTOTYPE:
                 return true;
             default:
                 return false;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "opcodes.hpp"
-#include "function.hpp"
+#include <opcodes.hpp>
+#include <function.hpp>
 #include <string>
 #include <vector>
 
