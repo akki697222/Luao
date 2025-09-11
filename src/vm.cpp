@@ -120,19 +120,7 @@ static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
     for (const auto& desc : updescs) {
         std::shared_ptr<UpValue> uv = nullptr;
 
-        if (desc.name == "_ENV") {
-            std::shared_ptr<LuaValue> env_v;
-            if (parent) {
-                env_v = parent->getUpvalues()[desc.idx]->getLocation().lock();
-                if (!env_v || env_v->getType() != LuaType::TABLE) {
-                    // fallback: まだない場合は新規 LuaTable
-                    env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
-                }
-            } else {
-                env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
-            }
-            uv = std::make_shared<UpValue>(env_v);
-        } else if (desc.inStack) {
+        if (desc.inStack) {
             // スタック上の LuaValue をコピーして shared_ptr で保持
             uv = std::make_shared<UpValue>(stack[desc.idx]);
         } else {
@@ -148,14 +136,24 @@ static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
 }
 
 VM::VM() : top(0) {
-    stack.resize(256);
+    stack.resize(20000);
+    for (int i = 0; i < 20000; i++) {
+        stack[i] = std::make_shared<LuaValue>();
+    }
 }
 
 void VM::load(std::shared_ptr<LuaClosure> main_closure) {
     call_stack.clear();
     stack.clear();
-    stack.resize(256);
+    stack.resize(20000);
+    for (int i = 0; i < 20000; i++) {
+        stack[i] = std::make_shared<LuaValue>();
+    }
     top = 0;
+
+    auto env_table = std::make_shared<LuaTable>();
+    *stack[0] = LuaValue(env_table, LuaType::TABLE);
+    top = 1;
 
     if (main_closure) {
         setup_closure(main_closure, *this);
@@ -1660,28 +1658,20 @@ void VM::run() {
                     if (proto_val.getType() == LuaType::FUNCTION) {
                         auto proto = std::dynamic_pointer_cast<LuaFunction>(proto_val.getObject());
                         std::shared_ptr<LuaClosure> new_closure = std::make_shared<LuaClosure>(proto);
-                        setup_closure(new_closure, *this);
-                        // initialize captured upvalues
+
                         const auto& updescs = proto->getUpvalDescs();
                         auto& new_upvals = new_closure->getUpvalues();
                         new_upvals.reserve(updescs.size());
+                        auto& parent_upvals = frame->closure->getUpvalues();
+
                         for (const auto& desc : updescs) {
                             std::shared_ptr<UpValue> uv = nullptr;
                             if (desc.inStack) {
-                                auto loc = std::make_shared<LuaValue>(stack[frame->stack_base + desc.idx]);
-                                uv = std::make_shared<UpValue>(loc);
+                                // Point to a value on the parent's stack frame.
+                                uv = std::make_shared<UpValue>(stack[frame->stack_base + desc.idx]);
                             } else {
-                                auto& outer = frame->closure->getUpvalues();
-                                if (desc.idx < 0 || desc.idx >= static_cast<int>(outer.size()))
-                                    throw std::runtime_error("Invalid upvalue index in CLOSURE");
-
-                                auto outer_uv = outer[desc.idx];
-                                if (outer_uv->isOpen()) {
-                                    uv = std::make_shared<UpValue>(outer_uv->getLocation().lock());
-                                } else {
-                                    uv = std::make_shared<UpValue>(std::make_shared<LuaValue>(outer_uv->getValue()));
-                                    uv->close();
-                                }
+                                // Share the upvalue from the parent closure.
+                                uv = parent_upvals[desc.idx];
                             }
                             new_upvals.push_back(uv);
                         }

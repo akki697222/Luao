@@ -125,9 +125,9 @@ void test_stack_overflow() {
     std::shared_ptr<LuaFunction> func = std::make_shared<LuaFunction>(bytecode_f, constants_f, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV_f}, std::vector<LocalVarinfo>{});
 
     std::vector<Instruction> bytecode = {
-        CREATE_ABx(OpCode::CLOSURE, 0, 0),     // 2: CLOSURE func
-        CREATE_ABC(OpCode::SETTABUP, 0, 0, 0), // 3: _ENV["func"] = func
-        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0), // 4: R0 = _ENV["func"]
+        CREATE_ABx(OpCode::CLOSURE, 1, 0),     // R(1) = closure(func)
+        CREATE_ABC(OpCode::SETTABUP, 0, 0, 1), // _ENV["func"] = R(1)
+        CREATE_ABC(OpCode::GETTABUP, 11, 0, 0), // R11 = _ENV["func"]
         CREATE_ABC(OpCode::LOADI, 1, 1, 0),    // 5: R1 = 1
         CREATE_ABC(OpCode::LOADI, 2, 2, 0),    // 6: R2 = 2
         CREATE_ABC(OpCode::LOADI, 3, 3, 0),    // 7: R3 = 3
@@ -138,7 +138,7 @@ void test_stack_overflow() {
         CREATE_ABC(OpCode::LOADI, 8, 8, 0),    // 12: R8 = 8
         CREATE_ABC(OpCode::LOADI, 9, 9, 0),    // 13: R9 = 9
         CREATE_ABC(OpCode::LOADI, 10, 10, 0),  // 14: R10 = 10
-        CREATE_ABC(OpCode::CALL, 0, 11, 1),    // 15: CALL func with 10 args
+        CREATE_ABC(OpCode::CALL, 11, 11, 1),    // 15: CALL R(11) with 10 args
         CREATE_A(OpCode::RETURN1, 0)           // 16: RETURN
     };
 
