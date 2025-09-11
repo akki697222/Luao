@@ -14,19 +14,68 @@ namespace mm {
     static const luao::LuaValue __sub       = luao::LuaValue(new luao::LuaString("__sub"),       LuaType::STRING);
     static const luao::LuaValue __mul       = luao::LuaValue(new luao::LuaString("__mul"),       LuaType::STRING);
     static const luao::LuaValue __div       = luao::LuaValue(new luao::LuaString("__div"),       LuaType::STRING);
+    static const luao::LuaValue __unm       = luao::LuaValue(new luao::LuaString("__unm"),       LuaType::STRING);
     static const luao::LuaValue __mod       = luao::LuaValue(new luao::LuaString("__mod"),       LuaType::STRING);
     static const luao::LuaValue __pow       = luao::LuaValue(new luao::LuaString("__pow"),       LuaType::STRING);
-    static const luao::LuaValue __unm       = luao::LuaValue(new luao::LuaString("__unm"),       LuaType::STRING);
-    static const luao::LuaValue __len       = luao::LuaValue(new luao::LuaString("__len"),       LuaType::STRING);
+    static const luao::LuaValue __idiv       = luao::LuaValue(new luao::LuaString("__idiv"),     LuaType::STRING);
+    static const luao::LuaValue __band      = luao::LuaValue(new luao::LuaString("__band"),      LuaType::STRING);
+    static const luao::LuaValue __bor       = luao::LuaValue(new luao::LuaString("__bor"),       LuaType::STRING);
+    static const luao::LuaValue __bxor      = luao::LuaValue(new luao::LuaString("__bxor"),      LuaType::STRING);
+    static const luao::LuaValue __bnot      = luao::LuaValue(new luao::LuaString("__bnot"),      LuaType::STRING);
+    static const luao::LuaValue __shl       = luao::LuaValue(new luao::LuaString("__shl"),       LuaType::STRING);
+    static const luao::LuaValue __shr       = luao::LuaValue(new luao::LuaString("__shr"),       LuaType::STRING);
     static const luao::LuaValue __eq        = luao::LuaValue(new luao::LuaString("__eq"),        LuaType::STRING);
     static const luao::LuaValue __lt        = luao::LuaValue(new luao::LuaString("__lt"),        LuaType::STRING);
     static const luao::LuaValue __le        = luao::LuaValue(new luao::LuaString("__le"),        LuaType::STRING);
+    static const luao::LuaValue __concat    = luao::LuaValue(new luao::LuaString("__concat"),    LuaType::STRING);
+    static const luao::LuaValue __len       = luao::LuaValue(new luao::LuaString("__len"),       LuaType::STRING);
+    static const luao::LuaValue __tostring  = luao::LuaValue(new luao::LuaString("__tostring"),  LuaType::STRING);
+    static const luao::LuaValue __metatable = luao::LuaValue(new luao::LuaString("__metatable"), LuaType::STRING);
+    static const luao::LuaValue __name      = luao::LuaValue(new luao::LuaString("__name"),      LuaType::STRING);
+    static const luao::LuaValue __pairs     = luao::LuaValue(new luao::LuaString("__pairs"),     LuaType::STRING);
+    static const luao::LuaValue __ipairs    = luao::LuaValue(new luao::LuaString("__ipairs"),    LuaType::STRING); /* deprecated */
     static const luao::LuaValue __index     = luao::LuaValue(new luao::LuaString("__index"),     LuaType::STRING);
     static const luao::LuaValue __newindex  = luao::LuaValue(new luao::LuaString("__newindex"),  LuaType::STRING);
     static const luao::LuaValue __call      = luao::LuaValue(new luao::LuaString("__call"),      LuaType::STRING);
-    static const luao::LuaValue __tostring  = luao::LuaValue(new luao::LuaString("__tostring"),  LuaType::STRING);
-    static const luao::LuaValue __concat    = luao::LuaValue(new luao::LuaString("__concat"),    LuaType::STRING);
-    static const luao::LuaValue __metatable = luao::LuaValue(new luao::LuaString("__metatable"), LuaType::STRING);
+    static const luao::LuaValue __mode      = luao::LuaValue(new luao::LuaString("__mode"),      LuaType::STRING);
+    static const luao::LuaValue __close     = luao::LuaValue(new luao::LuaString("__close"),     LuaType::STRING);
+    static const luao::LuaValue __gc        = luao::LuaValue(new luao::LuaString("__gc"),        LuaType::STRING);
+    // luao extension (implement later, definition only)
+    /* 
+        # 
+        # '__iterator' metamethod
+        #
+        returns are iterator function (used by for-each-do statements)
+        the return value of the function returned by __iterator is arbitrary, and the return value is directly assigned to the argument of for.
+        example:
+        local arr = {1, 2, 3}
+        local mt = {
+            __iterator = function(self, t)
+                local i = 0
+                return function()
+                    i = i + 1
+                    return t[i]
+                end
+            end
+        }
+        setmetatable(arr, mt)
+        -- for ... each value trying calls value's __iterator, __pairs, __ipairs metamethod.
+        for v each arr do
+            print(v)
+        end
+        
+        outputs are '1' '2' '3'
+    */
+    static const luao::LuaValue __iterator = luao::LuaValue(new luao::LuaString("__iterator"), LuaType::STRING);
+    /*
+        #
+        # '__newinstance' metamethod
+        #
+        This metamethod only applies to class.
+        When a class is instantiated, the VM first calls the class's $init method and finally calls the __newinstance metamethod.
+
+    */
+    static const luao::LuaValue __newinstance = luao::LuaValue(new luao::LuaString("__newinstance"), LuaType::STRING);
 }
 
 namespace luao {
@@ -129,6 +178,14 @@ void VM::load(LuaClosure* main_closure) {
     call_stack.emplace_back(main_closure, &main_closure->getFunction()->getBytecode()[0], 0);
 }
 
+void VM::set_top(int new_top) {
+    top == new_top;
+}
+
+int VM::get_top() {
+    return top;
+}
+
 LuaValue VM::get_stack_top() {
     if (top > 0) {
         return stack[top - 1];
@@ -149,6 +206,10 @@ const CallInfo& VM::get_call_stack_top() const {
 }
 
 const std::vector<CallInfo>& VM::get_call_stack() const {
+    return call_stack;
+}
+
+std::vector<CallInfo>& VM::get_call_stack_mutable() {
     return call_stack;
 }
 
@@ -190,19 +251,85 @@ static const LuaValue& mm_key_from_C(int c) {
     }
 }
 
-static bool try_call_c_metamethod(VM& vm, CallInfo* frame, int dest_a, const LuaValue& fn, const LuaValue& arg1, const LuaValue& arg2) {
-    if (auto* cfunc = dynamic_cast<LuaNativeFunction*>(fn.getObject())) {
-        int base_reg = frame->stack_base + dest_a;
-        auto& st = vm.get_stack_mutable();
-        st[base_reg + 0] = arg1;
-        st[base_reg + 1] = arg2;
-        int nret = cfunc->call(vm, base_reg, 2);
-        if (nret > 0) {
-            st[frame->stack_base + dest_a] = st[base_reg];
+static void vreturn(VM& vm, CallInfo* frame, int base, int nresults) {
+    if (nresults == 0) {
+        vm.set_top(frame->stack_base);
+    } else {
+        auto& stack = vm.get_stack_mutable();
+        for (int i = 0; i < nresults; i++) {
+            stack[frame->stack_base + i] = stack[frame->stack_base + base + i];
         }
-        return nret > 0;
+        vm.set_top(frame->stack_base + nresults);
     }
-    return false;
+}
+
+static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num_args, int num_results) {
+    auto& stack = vm.get_stack_mutable();
+    auto& call_stack = vm.get_call_stack_mutable();
+
+    if (fn.getType() == LuaType::FUNCTION) {
+        // Lua 関数 (LuaClosure)
+        if (auto* closure = dynamic_cast<LuaClosure*>(fn.getObject())) {
+            int new_stack_base = base;
+
+            // 引数を新フレームにコピー
+            for (int j = 0; j < num_args; ++j)
+                stack[new_stack_base + 1 + j] = stack[base + 1 + j];
+
+            // CALL 命令用 PC 更新
+            frame->pc = vm.get_current_pc();
+
+            // 新しい CallInfo 作成してスタックに追加
+            call_stack.emplace_back(closure, &closure->getFunction()->getBytecode()[0], new_stack_base);
+            return;
+        }
+
+        // C 関数 (LuaNativeFunction)
+        if (auto* cfunc = dynamic_cast<LuaNativeFunction*>(fn.getObject())) {
+            int nret = cfunc->call(vm, base + 1, num_args);
+
+            int ret_count = (num_results < 0) ? nret : num_results;
+
+            for (int j = 0; j < ret_count; ++j)
+                stack[base + j] = (j < nret) ? stack[base + 1 + j] : LuaValue();
+
+            vm.set_top(base + ret_count);
+            return;
+        }
+    }
+
+    // __call metamethod
+    if (auto* gc = dynamic_cast<LuaGCObject*>(fn.getObject())) {
+        LuaValue mmf = gc->getMetamethod(mm::__call);
+        if (mmf.getType() == LuaType::FUNCTION) {
+            int call_base = base;
+
+            // metamethod を関数位置に置く
+            stack[call_base] = mmf;
+
+            // self を先頭引数に
+            for (int j = num_args; j > 0; --j)
+                stack[call_base + j] = stack[base + j];
+            stack[call_base + 1] = fn;
+
+            int new_num_args = num_args + 1;
+
+            // 再帰呼び出し
+            vcall(vm, frame, stack[call_base], call_base, new_num_args, num_results);
+            return;
+        }
+    }
+
+    // 呼び出せない値
+    std::cerr << "Attempt to call a " << fn.typeName() << " value" << std::endl;
+}
+
+static bool checkluaint(const LuaValue& value) {
+    if (auto* luaint = dynamic_cast<const LuaInteger*>(value.getObject())) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool VM::as_bool(const LuaValue& value) {
@@ -215,6 +342,110 @@ bool VM::as_bool(const LuaValue& value) {
         }
     }
     return true;
+}
+
+static LuaValue try_arithmetic_metamethod(VM& vm, const LuaValue& mt_key, const LuaValue& a, const LuaValue& b) {
+    auto& stack = vm.get_stack_mutable();
+    auto& call_stack = vm.get_call_stack_mutable();
+
+    LuaValue mm;
+    if (auto* gc = dynamic_cast<LuaGCObject*>(a.getObject())) {
+        mm = gc->getMetamethod(mt_key);
+    }
+    if (!mm.getObject() && dynamic_cast<LuaGCObject*>(b.getObject())) {
+        mm = dynamic_cast<LuaGCObject*>(b.getObject())->getMetamethod(mt_key);
+    }
+
+    if (!mm.getObject()) {
+        std::cerr << "attempt to perform " << (mt_key.getObject() == mm::__concat.getObject() ? "concatenate" : "arithmetic") << " on a " << a.typeName() << " value" << std::endl;
+        return LuaValue(); // nil
+    }
+
+    // vcall を使って __add を呼ぶ
+    int stack_base = vm.get_top();
+    stack.push_back(mm); // metamethod を関数位置に
+    stack.push_back(a);  // self
+    stack.push_back(b);  // 引数
+    int num_args = 2;
+    int num_results = 1;
+
+    CallInfo* frame = &call_stack.back();
+    vcall(vm, frame, mm, stack_base, num_args, num_results);
+
+    LuaValue result = stack[stack_base];  // 戻り値は stack[stack_base] に置かれる
+    vm.set_top(stack_base + 1);                  // stack top 更新
+    return result;
+}
+
+// stack[frame->stack_base + a] に結果を返す
+static bool try_call_bin_metamethod(VM& vm, CallInfo* frame, const LuaValue& key, const LuaValue& v1, const LuaValue& v2, int dest_reg) {
+    auto& stack = vm.get_stack_mutable();
+    int top_before = vm.get_top();
+
+    if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
+        LuaValue mmf = gc->getMetamethod(key);
+        if (mmf.getType() == LuaType::FUNCTION) {
+            // vcall で metamethod を呼ぶ
+            int stack_base = top_before;
+            stack.push_back(mmf);
+            stack.push_back(v1);
+            stack.push_back(v2);
+            int num_args = 2;
+            int num_results = 1;
+
+            vcall(vm, frame, mmf, stack_base, num_args, num_results);
+
+            // 結果を目的レジスタにセット
+            stack[frame->stack_base + dest_reg] = stack[stack_base];
+            vm.set_top(stack_base + 1);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// 汎用的に metamethod を呼び出す
+LuaValue call_metamethod(VM& vm, const LuaValue& mt_key, const std::vector<LuaValue>& args) {
+    auto& stack = vm.get_stack_mutable();
+    auto& call_stack = vm.get_call_stack_mutable();
+
+    LuaValue mm;
+
+    // args[0] と args[1]（存在すれば）から metamethod を探す
+    if (!args.empty()) {
+        if (auto* gc = dynamic_cast<LuaGCObject*>(args[0].getObject())) {
+            mm = gc->getMetamethod(mt_key);
+        }
+    }
+    if (!mm.getObject() && args.size() > 1) {
+        if (auto* gc = dynamic_cast<LuaGCObject*>(args[1].getObject())) {
+            mm = gc->getMetamethod(mt_key);
+        }
+    }
+
+    if (!mm.getObject()) {
+        // 見つからなければ nil
+        return LuaValue();
+    }
+
+    // スタックに metamethod と引数を配置
+    int stack_base = vm.get_top();
+    stack.push_back(mm);
+    for (const auto& arg : args) {
+        stack.push_back(arg);
+    }
+
+    int num_args = static_cast<int>(args.size());
+    int num_results = 1;
+
+    CallInfo* frame = &call_stack.back();
+    vcall(vm, frame, mm, stack_base, num_args, num_results);
+
+    LuaValue result = stack[stack_base]; // 戻り値
+    vm.set_top(stack_base + 1);
+
+    return result;
 }
 
 // Arithmetic operations with metamethod support
@@ -233,8 +464,7 @@ LuaValue VM::add(const LuaValue& a, const LuaValue& b) {
             return LuaValue(new LuaNumber(na + nb), LuaType::NUMBER);
         }
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__add, a, b);
     }
 }
 
@@ -253,8 +483,7 @@ LuaValue VM::sub(const LuaValue& a, const LuaValue& b) {
             return LuaValue(new LuaNumber(na - nb), LuaType::NUMBER);
         }
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__sub, a, b);
     }
 }
 
@@ -273,8 +502,7 @@ LuaValue VM::mul(const LuaValue& a, const LuaValue& b) {
             return LuaValue(new LuaNumber(na * nb), LuaType::NUMBER);
         }
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__mul, a, b);
     }
 }
 
@@ -284,8 +512,7 @@ LuaValue VM::div(const LuaValue& a, const LuaValue& b) {
         luaNumber nb = get_number_from_value(b);
         return LuaValue(new LuaNumber(na / nb), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__div, a, b);
     }
 }
 
@@ -297,8 +524,7 @@ LuaValue VM::mod(const LuaValue& a, const LuaValue& b) {
         if (res < 0) res += nb;
         return LuaValue(new LuaNumber(res), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__mod, a, b);
     }
 }
 
@@ -308,8 +534,7 @@ LuaValue VM::pow(const LuaValue& a, const LuaValue& b) {
         luaNumber nb = get_number_from_value(b);
         return LuaValue(new LuaNumber(std::pow(na, nb)), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__pow, a, b);
     }
 }
 
@@ -317,10 +542,23 @@ LuaValue VM::idiv(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaNumber na = get_number_from_value(a);
         luaNumber nb = get_number_from_value(b);
-        return LuaValue(new LuaNumber(std::floor(na / nb)), LuaType::NUMBER);
+
+        if (nb == 0.0) {
+            throw std::runtime_error("Division by zero");
+        }
+
+        if (checkluaint(a) && checkluaint(b)) {
+            luaInt ia = static_cast<luaInt>(na);
+            luaInt ib = static_cast<luaInt>(nb);
+
+            luaInt result = static_cast<luaInt>(std::floor(static_cast<luaNumber>(ia) / ib));
+            return LuaValue(new LuaInteger(result), LuaType::NUMBER);
+        }
+
+        luaNumber result = std::floor(na / nb);
+        return LuaValue(new LuaNumber(result), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__idiv, a, b);
     }
 }
 
@@ -330,11 +568,12 @@ LuaValue VM::unm(const LuaValue& a) {
             return LuaValue(new LuaInteger(-int_a->getValue()), LuaType::NUMBER);
         } else if (auto* num_a = dynamic_cast<LuaNumber*>(a.getObject())) {
             return LuaValue(new LuaNumber(-num_a->getValue()), LuaType::NUMBER);
+        } else {
+            throw std::runtime_error("LuaValue type NUMBER has unknown internal object");
         }
     } else {
-        // Metamethod handling would go here
+        return try_arithmetic_metamethod(*this, mm::__unm, a, LuaValue());
     }
-    return LuaValue(); // nil for now
 }
 
 LuaValue VM::len(const LuaValue& a) {
@@ -345,21 +584,15 @@ LuaValue VM::len(const LuaValue& a) {
         auto* table = dynamic_cast<LuaTable*>(a.getObject());
         LuaValue mm = table->getMetamethod(mm::__len);
         if (mm.getObject()) {
-            // metamethod handling would go here
-            return LuaValue(); // nil for now
+            return call_metamethod(*this, mm::__len, {LuaValue(table, LuaType::TABLE)});
         } else {
             return table->vlen();
         }
     } else {
-        if (auto* gc = dynamic_cast<LuaGCObject*>(a.getObject())) {
-            LuaValue mm = gc->getMetamethod(mm::__len);
-            if (mm.getObject()) {
-                // metamethod handling would go here
-                return LuaValue(); // nil for now
-            }
-        }
+        return call_metamethod(*this, mm::__len, {a});
     }
-    return LuaValue(); // nil for now
+    std::cerr << "attempt to get length of a " << a.typeName() << " value" << std::endl;
+    return LuaValue();
 }
 
 LuaValue VM::concat(const LuaValue& a, const LuaValue& b) {
@@ -368,8 +601,7 @@ LuaValue VM::concat(const LuaValue& a, const LuaValue& b) {
         auto* str_b = dynamic_cast<LuaString*>(b.getObject());
         return LuaValue(new LuaString(str_a->getValue() + str_b->getValue()), LuaType::STRING);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__concat, a, b);
     }
 }
 
@@ -380,8 +612,7 @@ LuaValue VM::band(const LuaValue& a, const LuaValue& b) {
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
         return LuaValue(new LuaInteger(ia & ib), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__band, a, b);
     }
 }
 
@@ -391,8 +622,7 @@ LuaValue VM::bor(const LuaValue& a, const LuaValue& b) {
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
         return LuaValue(new LuaInteger(ia | ib), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__bor, a, b);
     }
 }
 
@@ -402,8 +632,7 @@ LuaValue VM::bxor(const LuaValue& a, const LuaValue& b) {
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
         return LuaValue(new LuaInteger(ia ^ ib), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__bxor, a, b);
     }
 }
 
@@ -412,8 +641,7 @@ LuaValue VM::bnot(const LuaValue& a) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         return LuaValue(new LuaInteger(~ia), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__bnot, a, LuaValue());
     }
 }
 
@@ -423,8 +651,7 @@ LuaValue VM::shl(const LuaValue& a, const LuaValue& b) {
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
         return LuaValue(new LuaInteger(ia << ib), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__shl, a, b);
     }
 }
 
@@ -434,8 +661,7 @@ LuaValue VM::shr(const LuaValue& a, const LuaValue& b) {
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
         return LuaValue(new LuaInteger(ia >> ib), LuaType::NUMBER);
     } else {
-        // Metamethod handling would go here
-        return LuaValue(); // nil for now
+        return try_arithmetic_metamethod(*this, mm::__shr, a, b);
     }
 }
 
@@ -620,6 +846,7 @@ void VM::run() {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
                         }
                     }
+                    top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::GETI: {
@@ -797,36 +1024,14 @@ void VM::run() {
                     break;
                 }
                 case OpCode::ADDI: {
-                    int a = GETARG_A(i); /* args are 'A B sC' */
+                    int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
                     LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
 
-                    if (rb.getType() == LuaType::NUMBER) {
-                        if (auto* int_b = dynamic_cast<LuaInteger*>(rb.getObject())) {
-                            luaInt val_b = int_b->getValue();
-                            luaInt res = val_b + sc;
-                            stack[frame->stack_base + a] = LuaValue(new LuaInteger(res), LuaType::NUMBER);
-                        } else if (auto* num_b = dynamic_cast<LuaNumber*>(rb.getObject())) {
-                            luaNumber nb = num_b->getValue();
-                            luaNumber res = nb + static_cast<luaNumber>(sc);
-                            stack[frame->stack_base + a] = LuaValue(new LuaNumber(res), LuaType::NUMBER);
-                        }
-                    } else {
-                        // metamethod fallback for ADDI: R[A] = R[B] + sC
-                        LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
-                        auto try_mm = [&](const LuaValue& v1, const LuaValue& v2) -> bool {
-                            if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
-                                LuaValue mmf = gc->getMetamethod(mm::__add);
-                                if (mmf.getType() == LuaType::FUNCTION) {
-                                    if (try_call_c_metamethod(*this, frame, a, mmf, v1, v2)) { top = frame->stack_base + a + 1; return true; }
-                                }
-                            }
-                            return false;
-                        };
-                        if (try_mm(rb, imm) || try_mm(imm, rb)) { break; }
-                        std::cerr << "attempt to perform ADDI via metamethod on unsupported types" << std::endl;
-                    }
+                    stack[frame->stack_base + a] = add(rb, imm);
+
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -836,14 +1041,9 @@ void VM::run() {
                     int c = GETARG_C(i);
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
-                    
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(nb + nc), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                                
+                    stack[frame->stack_base + a] = add(rb, kc);
+                                
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -854,13 +1054,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(nb - nc), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = sub(rb, kc);
+                    
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -871,13 +1066,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(nb * nc), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = mul(rb, kc);
+
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -888,15 +1078,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        luaNumber res = std::fmod(nb, nc);
-                        if (res < 0) res += nc;
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(res), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = mod(rb, kc);
+                    
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -907,13 +1090,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(std::pow(nb, nc)), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = pow(rb, kc);
+
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -924,13 +1102,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(nb / nc), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = div(rb, kc);
+
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -941,14 +1114,8 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaNumber nb = get_number_from_value(rb);
-                        luaNumber nc = get_number_from_value(kc);
-                        luaNumber res = std::floor(nb / nc);
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(res), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = idiv(rb, kc);
+                    
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1079,13 +1246,7 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaInt ib = static_cast<luaInt>(get_number_from_value(rb));
-                        luaInt ic = static_cast<luaInt>(get_number_from_value(kc));
-                        stack[frame->stack_base + a] = LuaValue(new LuaInteger(ib & ic), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = band(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1096,13 +1257,7 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaInt ib = static_cast<luaInt>(get_number_from_value(rb));
-                        luaInt ic = static_cast<luaInt>(get_number_from_value(kc));
-                        stack[frame->stack_base + a] = LuaValue(new LuaInteger(ib | ic), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = bor(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1113,13 +1268,7 @@ void VM::run() {
                     LuaValue rb = stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    if (rb.getType() == LuaType::NUMBER && kc.getType() == LuaType::NUMBER) {
-                        luaInt ib = static_cast<luaInt>(get_number_from_value(rb));
-                        luaInt ic = static_cast<luaInt>(get_number_from_value(kc));
-                        stack[frame->stack_base + a] = LuaValue(new LuaInteger(ib ^ ic), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = bxor(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1128,14 +1277,9 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
                     LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
                     
-                    if (rb.getType() == LuaType::NUMBER) {
-                        luaInt ib = static_cast<luaInt>(get_number_from_value(rb));
-                        luaInt res = ib >> sc;
-                        stack[frame->stack_base + a] = LuaValue(new LuaInteger(res), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = shr(rb, imm);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1144,14 +1288,9 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
                     LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
                     
-                    if (rb.getType() == LuaType::NUMBER) {
-                        luaInt ib = static_cast<luaInt>(get_number_from_value(rb));
-                        luaInt res = ib << sc;
-                        stack[frame->stack_base + a] = LuaValue(new LuaInteger(res), LuaType::NUMBER);
-                    } else {
-                        // metamethod handling would go here
-                    }
+                    stack[frame->stack_base + a] = shl(rb, imm);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1358,31 +1497,16 @@ void VM::run() {
                 }
                 case OpCode::CALL: {
                     int a = GETARG_A(i);
+                    int b = GETARG_B(i);
+                    int c = GETARG_C(i);
                     LuaValue func_val = stack[frame->stack_base + a];
-                    if (func_val.getType() == LuaType::FUNCTION) {
-                        if (auto* closure = dynamic_cast<LuaClosure*>(func_val.getObject())) {
-                            frame->pc = pc;
-                            call_stack.emplace_back(closure, &closure->getFunction()->getBytecode()[0], frame->stack_base + a + 1);
-                            break; // Continue to the new frame's execution loop
-                        }
-                        // native cfunction support
-                        if (auto* cfunc = dynamic_cast<LuaNativeFunction*>(func_val.getObject())) {
-                            // advance pc for current frame so we don't re-execute CALL
-                            frame->pc = pc;
-                            // For now, ignore B/C; treat as fixed arity 0 args, 1 return (provided by cfunc)
-                            int num_args = 0; // TODO: respect encoded B later
-                            int base_reg = frame->stack_base + a + 1;
-                            int nret = cfunc->call(*this, base_reg, num_args);
-                            // place results at R[A..]
-                            for (int j = 0; j < nret; ++j) {
-                                stack[frame->stack_base + a + j] = stack[base_reg + j];
-                            }
-                            top = frame->stack_base + a + nret;
-                            break;
-                        }
-                    }
-                    std::cerr << "Attempt to call a " << func_val.typeName() << " value" << std::endl;
-                    return; // or error
+
+                    int num_args = (b == 0) ? (top - (frame->stack_base + a + 1)) : (b - 1);
+                    int num_results = (c == 0) ? -1 : (c - 1);
+
+                    vcall(*this, frame, func_val, frame->stack_base + a, num_args, num_results);
+                                
+                    break;
                 }
                 case OpCode::TAILCALL: {
                     int a = GETARG_A(i);
@@ -1411,52 +1535,43 @@ void VM::run() {
                     std::cerr << "Attempt to tail call a " << func_val.typeName() << " value" << std::endl;
                     return; // or error
                 }
-                case OpCode::RETURN: {
+                case OpCode::RETURN:
+                case OpCode::RETURN0:
+                case OpCode::RETURN1: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
-                    int n_results = b > 0 ? b - 1 : 0; // Simplified for now
+                    int n_results = (op == OpCode::RETURN0) ? 0 : (op == OpCode::RETURN1) ? 1 : (b > 0 ? b - 1 : top - (frame->stack_base + a));
 
-                    if (call_stack.size() > 1) {
-                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
+                    // Handle variable arguments for RETURN
+                    if (b == 0 && op == OpCode::RETURN) {
+                        n_results = top - (frame->stack_base + a);
+                    }
+                
+                    // Close open upvalues if necessary
+                    if (op != OpCode::RETURN0) {
+                        for (auto& upval : frame->closure->getUpvalues()) {
+                            if (upval->getLocation() >= &stack[frame->stack_base + a]) {
+                                upval->close();
+                            }
+                        }
+                    }
+                
+                    // Call vreturn to handle return values
+                    vreturn(*this, frame, a, n_results);
+                
+                    // Pop the current frame
+                    call_stack.pop_back();
+
+                    // If call stack is not empty, update caller's top
+                    if (!call_stack.empty()) {
+                        CallInfo& caller_frame = call_stack.back();
                         Instruction call_i = *(caller_frame.pc - 1);
                         int result_reg = GETARG_A(call_i);
-                        for (int j = 0; j < n_results; j++) {
-                            stack[caller_frame.stack_base + result_reg + j] = stack[frame->stack_base + a + j];
-                        }
                         top = caller_frame.stack_base + result_reg + n_results;
                     } else {
                         // Returning from top-level
-                        for (int j = 0; j < n_results; j++) {
-                            stack[j] = stack[frame->stack_base + a + j];
-                        }
                         top = n_results;
                     }
-                    call_stack.pop_back();
-                    break;
-                }
-                case OpCode::RETURN0: {
-                    if (call_stack.size() > 1) {
-                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
-                        top = caller_frame.stack_base + GETARG_A(*(caller_frame.pc - 1));
-                    } else {
-                        top = 0;
-                    }
-                    call_stack.pop_back();
-                    break;
-                }
-                case OpCode::RETURN1: {
-                    int a = GETARG_A(i);
-                    if (call_stack.size() > 1) {
-                        CallInfo& caller_frame = call_stack[call_stack.size() - 2];
-                        Instruction call_i = *(caller_frame.pc - 1);
-                        int result_reg = GETARG_A(call_i);
-                        stack[caller_frame.stack_base + result_reg] = stack[frame->stack_base + a];
-                        top = caller_frame.stack_base + result_reg + 1;
-                    } else {
-                        stack[0] = stack[frame->stack_base + a];
-                        top = 1;
-                    }
-                    call_stack.pop_back();
                     break;
                 }
                 case OpCode::FORLOOP: {
@@ -1578,64 +1693,48 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
+                                
                     LuaValue va = stack[frame->stack_base + a];
                     LuaValue vb = stack[frame->stack_base + b];
-                    auto try_mm = [&](const LuaValue& v1, const LuaValue& v2) -> bool {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
-                            LuaValue mmf = gc->getMetamethod(key);
-                            if (mmf.getType() == LuaType::FUNCTION) {
-                                if (try_call_c_metamethod(*this, frame, a, mmf, v1, v2)) { return true; }
-                            }
-                        }
-                        return false;
-                    };
-                    if (!(try_mm(va, vb) || try_mm(vb, va))) {
+                                
+                    if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
                         std::cerr << "metamethod not found for MMBIN" << std::endl;
                     }
+                
                     top = frame->stack_base + a + 1;
                     break;
                 }
+                
                 case OpCode::MMBINI: {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
+                
                     LuaValue va = stack[frame->stack_base + a];
                     LuaValue vb(new LuaInteger(sb), LuaType::NUMBER);
-                    auto try_mm = [&](const LuaValue& v1, const LuaValue& v2) -> bool {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
-                            LuaValue mmf = gc->getMetamethod(key);
-                            if (mmf.getType() == LuaType::FUNCTION) {
-                                if (try_call_c_metamethod(*this, frame, a, mmf, v1, v2)) { return true; }
-                            }
-                        }
-                        return false;
-                    };
-                    if (!(try_mm(va, vb) || try_mm(vb, va))) {
+                
+                    if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
                         std::cerr << "metamethod not found for MMBINI" << std::endl;
                     }
+                
                     top = frame->stack_base + a + 1;
                     break;
                 }
+                
                 case OpCode::MMBINK: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
+                
                     LuaValue va = stack[frame->stack_base + a];
                     LuaValue vb = func->getConstants()[b];
-                    auto try_mm = [&](const LuaValue& v1, const LuaValue& v2) -> bool {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
-                            LuaValue mmf = gc->getMetamethod(key);
-                            if (mmf.getType() == LuaType::FUNCTION) {
-                                if (try_call_c_metamethod(*this, frame, a, mmf, v1, v2)) { return true; }
-                            }
-                        }
-                        return false;
-                    };
-                    if (!(try_mm(va, vb) || try_mm(vb, va))) {
+                
+                    if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
                         std::cerr << "metamethod not found for MMBINK" << std::endl;
                     }
+                
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1729,11 +1828,6 @@ void VM::run() {
                     std::cout << "Unknown opcode: " << to_string(op) << std::endl;
                     return;
                 }
-            }
-            // If we are here, it means we have returned from a function or called one.
-            // so break from the inner loop to get the new frame.
-            if (op == OpCode::CALL || op == OpCode::TAILCALL || op == OpCode::RETURN || op == OpCode::RETURN0 || op == OpCode::RETURN1) {
-                break;
             }
         }
     }

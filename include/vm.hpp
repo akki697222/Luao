@@ -37,11 +37,14 @@ namespace luao {
         void load(LuaClosure* main_closure);
         void run();
         LuaValue get_stack_top();
+        void set_top(int new_top);
+        int get_top();
         const std::vector<LuaValue>& get_stack() const;
         std::vector<LuaValue>& get_stack_mutable();
         void set_trace(bool trace);
         bool as_bool(const LuaValue& value);
         const std::vector<CallInfo>& get_call_stack() const;
+        std::vector<CallInfo>& get_call_stack_mutable();
         const CallInfo& get_call_stack_top() const;
         const Instruction* get_current_pc();
         

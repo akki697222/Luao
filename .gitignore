@@ -17,4 +17,6 @@ bin/
 # other
 src_lua/
 test.bat
+test.ps1
 test.lua
+execute.log

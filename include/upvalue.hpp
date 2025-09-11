@@ -24,7 +24,7 @@ public:
         closed_ = *location_;
         location_ = &closed_;
     }
-
+    
     LuaType getType() const override { return LuaType::USERDATA; }
     std::string typeName() const override { return "upvalue"; }
 
