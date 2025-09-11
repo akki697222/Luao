@@ -14,10 +14,10 @@ namespace luao {
 // --- Helper Functions ---
 
 static luaNumber get_number_from_value(const LuaValue& val) {
-    if (auto* num = dynamic_cast<const LuaNumber*>(val.getObject())) {
+    if (auto num = std::dynamic_pointer_cast<const LuaNumber>(val.getObject())) {
         return num->getValue();
     }
-    if (auto* integer = dynamic_cast<const LuaInteger*>(val.getObject())) {
+    if (auto integer = std::dynamic_pointer_cast<const LuaInteger>(val.getObject())) {
         return static_cast<luaNumber>(integer->getValue());
     }
     return 0.0;
@@ -29,8 +29,8 @@ static bool keys_equal(const LuaValue& k1, const LuaValue& k2) {
         case LuaType::NIL: return true;
         case LuaType::NUMBER: return get_number_from_value(k1) == get_number_from_value(k2);
         case LuaType::STRING: {
-            auto* s1 = static_cast<const LuaString*>(k1.getObject());
-            auto* s2 = static_cast<const LuaString*>(k2.getObject());
+            auto s1 = std::dynamic_pointer_cast<const LuaString>(k1.getObject());
+            auto s2 = std::dynamic_pointer_cast<const LuaString>(k2.getObject());
             return s1 && s2 && s1->getValue() == s2->getValue();
         }
         default: return k1.getObject() == k2.getObject();
@@ -42,10 +42,10 @@ size_t LuaTable::hash(const LuaValue& key) const {
         case LuaType::NIL: return 0;
         case LuaType::NUMBER: return std::hash<luaNumber>{}(get_number_from_value(key));
         case LuaType::STRING: {
-            auto* s = static_cast<const LuaString*>(key.getObject());
+            auto s = std::dynamic_pointer_cast<const LuaString>(key.getObject());
             return std::hash<std::string>{}(s ? s->getValue() : "");
         }
-        default: return std::hash<const void*>{}(key.getObject());
+        default: return std::hash<const void*>{}(key.getObject().get());
     }
 }
 
@@ -111,7 +111,7 @@ void LuaTable::rehash() {
     for (size_t i = 0; i < m_array.size(); ++i) {
         if (m_array[i].getType() != LuaType::NIL) {
             Node n;
-            n.key = LuaValue(new LuaInteger(i + 1), LuaType::NUMBER);
+            n.key = LuaValue(std::make_shared<LuaInteger>(i + 1), LuaType::NUMBER);
             n.value = m_array[i];
             all_nodes.push_back(n);
         }
@@ -122,19 +122,13 @@ void LuaTable::rehash() {
         }
     }
 
-    if (all_nodes.empty()) {
-        m_array.clear();
-        m_nodes.clear();
-        return;
-    }
-
     // 2. Count integer keys in logarithmic bins
     constexpr int MAX_LOG_2 = sizeof(luaInt) * 8;
     std::vector<int> nums(MAX_LOG_2, 0);
     int total_hash_keys = 0;
     for (const auto& node : all_nodes) {
         if (node.key.getType() == LuaType::NUMBER) {
-            if (auto* integer = dynamic_cast<LuaInteger*>(node.key.getObject())) {
+            if (auto integer = std::dynamic_pointer_cast<LuaInteger>(node.key.getObject())) {
                 luaInt k = integer->getValue();
                 if (k > 0) {
                     int log2_k = 0;
@@ -185,7 +179,7 @@ void LuaTable::rehash() {
 
     for (const auto& node : all_nodes) {
         if (node.key.getType() == LuaType::NUMBER) {
-            if (auto* integer = dynamic_cast<LuaInteger*>(node.key.getObject())) {
+            if (auto integer = std::dynamic_pointer_cast<LuaInteger>(node.key.getObject())) {
                 luaInt k = integer->getValue();
                 if (k > 0 && k <= new_array_size) {
                     m_array[k - 1] = node.value;
@@ -204,7 +198,7 @@ LuaTable::~LuaTable() = default;
 
 LuaValue LuaTable::get(const LuaValue& key) const {
     if (key.getType() == LuaType::NUMBER) {
-        if (auto* integer = dynamic_cast<const LuaInteger*>(key.getObject())) {
+        if (auto integer = std::dynamic_pointer_cast<const LuaInteger>(key.getObject())) {
             luaInt idx = integer->getValue();
             if (idx >= 1 && idx <= m_array.size()) {
                 return m_array[idx - 1];
@@ -239,7 +233,7 @@ void LuaTable::set(const LuaValue& key, const LuaValue& value) {
 
     // Handle array part
     if (key.getType() == LuaType::NUMBER) {
-        if (auto* integer = dynamic_cast<const LuaInteger*>(key.getObject())) {
+        if (auto integer = std::dynamic_pointer_cast<const LuaInteger>(key.getObject())) {
             luaInt idx = integer->getValue();
             if (idx >= 1) {
                 if (idx <= m_array.size()) { m_array[idx - 1] = value; return; }
@@ -339,12 +333,12 @@ void LuaTable::set(int index, const LuaValue& value) {
         return;
     }
 
-    LuaValue key(new LuaInteger(index), LuaType::NUMBER);
+    LuaValue key(std::make_shared<LuaInteger>(index), LuaType::NUMBER);
     set(key, value);
 }
 
 LuaValue LuaTable::vlen() const {
-    return LuaValue(new LuaInteger(m_array.size()), LuaType::NUMBER);
+    return LuaValue(std::make_shared<LuaInteger>(m_array.size()), LuaType::NUMBER);
 }
 
 int LuaTable::ilen() const {

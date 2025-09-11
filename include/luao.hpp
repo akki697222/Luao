@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vm.hpp>
-#include <table.hpp>
-#include <object.hpp>
 #include <iostream>
 
 /* Infomation */
@@ -11,8 +8,8 @@
 #define LUAO_LICENSE "MIT License"
 
 /* Bytecode */
-#define LUAO_BMAGIC 0x1C4C7561 /* "\x1cLua" */
-#define LUAO_BVERSION 0x10   /* Luao version 1.0 (Implements Lua 5.4) */
+#define LUAO_BMAGIC 0x1B4C7561 /* "\x1bLua" */
+#define LUAO_BVERSION 0x54   /* Lua 5.4 */
 
 /* Default Lua Typedefs */
 #define LUAO_TNIL		    0
@@ -24,13 +21,14 @@
 #define LUAO_TFUNCTION		6
 #define LUAO_TUSERDATA		7
 #define LUAO_TTHREAD		8
+#define LUAO_PROTO          9
 /* Luao Extensions */
-#define LUAO_TOBJECT		9  /* Object/Class */
-#define LUAO_TINSTANCE      10 /* Class Instance */
-#define LUAO_TTYPE          11 /* Type Object */
-#define LUAO_TTHROWABLE     12 /* Throwable */
+#define LUAO_TOBJECT		10  /* Object/Class */
+#define LUAO_TINSTANCE      11 /* Class Instance */
+#define LUAO_TTYPE          12 /* Type Object */
+#define LUAO_TTHROWABLE     13 /* Throwable */
 
-#define LUAO_NUMTYPES		13
+#define LUAO_NUMTYPES		14
 
 #define LUAERR(msg) std::cerr << msg << std::endl
 
@@ -47,15 +45,13 @@ enum class LuaType {
     FUNCTION = LUAO_TFUNCTION,
     USERDATA = LUAO_TUSERDATA,
     THREAD = LUAO_TTHREAD,
+    PROTO = LUAO_PROTO,
     OBJECT = LUAO_TOBJECT,         /* Object/Class */
     INSTANCE = LUAO_TINSTANCE,     /* Class Instance */
     TYPE = LUAO_TTYPE,             /* Type Object */
-    THROWABLE = LUAO_TTHROWABLE    /* Throwable */
+    THROWABLE = LUAO_TTHROWABLE,   /* Throwable */
 };
 
 namespace luao {
-    LuaValue* get_metamethod(const LuaTable& mt, LuaValue& index) {
-        LuaValue mm = mt.get(index);
 
-    }
 }
