@@ -7,31 +7,39 @@ namespace luao {
 
 class UpValue : public LuaObject {
 public:
-    explicit UpValue(std::shared_ptr<LuaValue> location) : location_(location) {}
+    UpValue(std::shared_ptr<LuaValue> location)
+        : location_(location), open_(true) {}
 
-    std::shared_ptr<LuaValue> getLocation() const {
+    bool isOpen() const { return open_; }
+
+    std::weak_ptr<LuaValue> getLocation() {
         return location_;
     }
 
     LuaValue getValue() const {
-        return *location_;
+        if (auto loc = location_.lock()) return *loc;
+        return closed_; 
     }
 
     void setValue(const LuaValue& value) {
-        *location_ = value;
+        if (auto loc = location_.lock()) *loc = value;
+        else closed_ = value;
     }
 
     void close() {
-        closed_ = *location_.get();
-        location_ = std::make_shared<LuaValue>(closed_);
+        if (!open_) return;
+        if (auto loc = location_.lock()) closed_ = *loc;
+        location_.reset();
+        open_ = false;
     }
-    
+
     LuaType getType() const override { return LuaType::USERDATA; }
     std::string typeName() const override { return "upvalue"; }
 
 private:
-    std::shared_ptr<LuaValue> location_;
+    std::weak_ptr<LuaValue> location_;
     LuaValue closed_;
+    bool open_;
 };
 
 } // namespace luao

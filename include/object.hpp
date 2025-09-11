@@ -8,6 +8,15 @@
 
 namespace luao {
 
+class LuaGCObject;
+class LuaValue;
+class LuaInteger;
+class LuaNumber;
+class LuaString;
+class LuaFunction;
+class LuaTable;
+class LuaClosure;
+
 class LuaObject {
 public:
     virtual ~LuaObject() = default;
@@ -92,7 +101,7 @@ public:
 
     LuaValue(std::shared_ptr<LuaObject> obj, LuaType type) : obj(obj), type(type) {}
 
-    LuaValue(const LuaValue& other) : obj(other.obj), type(other.type) {}
+    LuaValue(const std::shared_ptr<LuaValue>& other) : obj(other.get()->getObject()), type(other.get()->getType()) {}
 
     LuaValue& operator=(const LuaValue& other) {
         if (this != &other) {

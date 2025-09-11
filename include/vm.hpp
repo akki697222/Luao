@@ -10,77 +10,43 @@
 
 // metamethod key shortcuts
 namespace mm {
-    extern const luao::LuaValue __add       ;
-    extern const luao::LuaValue __sub       ;
-    extern const luao::LuaValue __mul       ;
-    extern const luao::LuaValue __div       ;
-    extern const luao::LuaValue __unm       ;
-    extern const luao::LuaValue __mod       ;
-    extern const luao::LuaValue __pow       ;
-    extern const luao::LuaValue __idiv      ;
-    extern const luao::LuaValue __band      ;
-    extern const luao::LuaValue __bor       ;
-    extern const luao::LuaValue __bxor      ;
-    extern const luao::LuaValue __bnot      ;
-    extern const luao::LuaValue __shl       ;
-    extern const luao::LuaValue __shr       ;
-    extern const luao::LuaValue __eq        ;
-    extern const luao::LuaValue __lt        ;
-    extern const luao::LuaValue __le        ;
-    extern const luao::LuaValue __concat    ;
-    extern const luao::LuaValue __len       ;
-    extern const luao::LuaValue __tostring  ;
-    extern const luao::LuaValue __metatable ;
-    extern const luao::LuaValue __name      ;
-    extern const luao::LuaValue __pairs     ;
-    extern const luao::LuaValue __ipairs    ; /* deprecated */
-    extern const luao::LuaValue __index     ;
-    extern const luao::LuaValue __newindex  ;
-    extern const luao::LuaValue __call      ;
-    extern const luao::LuaValue __mode      ;
-    extern const luao::LuaValue __close     ;
-    extern const luao::LuaValue __gc        ;
-    // luao extension (implement later, definition only)
-    /* 
-        # 
-        # '__iterator' metamethod
-        #
-        returns are iterator function (used by for-each-do statements)
-        the return value of the function returned by __iterator is arbitrary, and the return value is directly assigned to the argument of for.
-        example:
-        local arr = {1, 2, 3}
-        local mt = {
-            __iterator = function(self, t)
-                local i = 0
-                return function()
-                    i = i + 1
-                    return t[i]
-                end
-            end
-        }
-        setmetatable(arr, mt)
-        -- for ... each value trying calls value's __iterator, __pairs, __ipairs metamethod.
-        for v each arr do
-            print(v)
-        end
-        
-        outputs are '1' '2' '3'
-    */
-    extern const luao::LuaValue __iterator;
-    /*
-        #
-        # '__newinstance' metamethod
-        #
-        This metamethod only applies to class.
-        When a class is instantiated, the VM first calls the class's $init method and finally calls the __newinstance metamethod.
-
-    */
-    extern const luao::LuaValue __newinstance;
+    extern const luao::LuaValue __add         ;
+    extern const luao::LuaValue __sub         ;
+    extern const luao::LuaValue __mul         ;
+    extern const luao::LuaValue __div         ;
+    extern const luao::LuaValue __unm         ;
+    extern const luao::LuaValue __mod         ;
+    extern const luao::LuaValue __pow         ;
+    extern const luao::LuaValue __idiv        ;
+    extern const luao::LuaValue __band        ;
+    extern const luao::LuaValue __bor         ;
+    extern const luao::LuaValue __bxor        ;
+    extern const luao::LuaValue __bnot        ;
+    extern const luao::LuaValue __shl         ;
+    extern const luao::LuaValue __shr         ;
+    extern const luao::LuaValue __eq          ;
+    extern const luao::LuaValue __lt          ;
+    extern const luao::LuaValue __le          ;
+    extern const luao::LuaValue __concat      ;
+    extern const luao::LuaValue __len         ;
+    extern const luao::LuaValue __tostring    ;
+    extern const luao::LuaValue __metatable   ;
+    extern const luao::LuaValue __name        ;
+    extern const luao::LuaValue __pairs       ;
+    extern const luao::LuaValue __ipairs      ; /* deprecated */
+    extern const luao::LuaValue __index       ;
+    extern const luao::LuaValue __newindex    ;
+    extern const luao::LuaValue __call        ;
+    extern const luao::LuaValue __mode        ;
+    extern const luao::LuaValue __close       ;
+    extern const luao::LuaValue __gc          ;
+    extern const luao::LuaValue __iterator    ;
+    extern const luao::LuaValue __newinstance ;
 }
 
 namespace luao {
-    static LuaBool* TRUE_OBJ = new LuaBool(true);
-    static LuaBool* FALSE_OBJ = new LuaBool(false);
+    static std::shared_ptr<LuaBool> TRUE_OBJ = std::make_shared<LuaBool>(true);
+    static std::shared_ptr<LuaBool> FALSE_OBJ = std::make_shared<LuaBool>(false);
 
     struct CallInfo;
     class VM;
@@ -104,8 +70,8 @@ namespace luao {
         LuaValue get_stack_top();
         void set_top(int new_top);
         int get_top();
-        const std::vector<LuaValue>& get_stack() const;
-        std::vector<LuaValue>& get_stack_mutable();
+        const std::vector<std::shared_ptr<LuaValue>>& get_stack() const;
+        std::vector<std::shared_ptr<LuaValue>>& get_stack_mutable();
         void set_trace(bool trace);
         bool as_bool(const LuaValue& value);
         const std::vector<CallInfo>& get_call_stack() const;
@@ -139,7 +105,7 @@ namespace luao {
         bool le(const LuaValue& a, const LuaValue& b);
     private:
         std::vector<CallInfo> call_stack;
-        std::vector<LuaValue> stack;
+        std::vector<std::shared_ptr<LuaValue>> stack;
         int top;
         bool trace_execution = false;
     };

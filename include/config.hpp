@@ -1,4 +1,3 @@
-/*
-    Same as Lua default LUAI_MAXSTACK
-*/
-#define LUAO_MAXSTACK 1000000
+#define LUAI_MAXSTACK 1000000
+#define LUAI_MAXCCALLS 200
+#define LUAI_MAXCALLS 1000

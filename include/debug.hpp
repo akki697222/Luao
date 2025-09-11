@@ -7,6 +7,6 @@
 
 namespace luao {
 
-std::string disassemble_instruction(Instruction i, const LuaFunction* func);
+std::string disassemble_instruction(Instruction i, const std::shared_ptr<LuaFunction> func);
 
 } // namespace luao

@@ -9,30 +9,19 @@ namespace luao {
 
 class LuaClosure : public LuaGCObject {
 public:
-    explicit LuaClosure(LuaFunction* function) : function_(function) {
-        if (function_) {
-            function_->retain();
-        }
-    }
+    explicit LuaClosure(std::shared_ptr<LuaFunction> function) : function_(function) {}
 
-    ~LuaClosure() override {
-        if (function_) {
-            function_->release();
-        }
-        for (auto* upvalue : upvalues_) {
-            upvalue->release();
-        }
-    }
+    ~LuaClosure() = default;
 
-    LuaFunction* getFunction() const {
+    std::shared_ptr<LuaFunction> getFunction() const {
         return function_;
     }
 
-    std::vector<UpValue*>& getUpvalues() {
+    std::vector<std::shared_ptr<UpValue>>& getUpvalues() {
         return upvalues_;
     }
 
-    void setUpvalue(int index, UpValue* upvalue) {
+    void setUpvalue(int index, std::shared_ptr<UpValue> upvalue) {
         upvalues_[index] = upvalue;
     }
 
@@ -40,8 +29,8 @@ public:
     std::string typeName() const override { return "function"; }
 
 private:
-    LuaFunction* function_;
-    std::vector<UpValue*> upvalues_;
+    std::shared_ptr<LuaFunction> function_;
+    std::vector<std::shared_ptr<UpValue>> upvalues_;
 };
 
 } // namespace luao

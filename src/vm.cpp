@@ -12,39 +12,38 @@
 #include <memory>
 
 namespace mm {
-    luao::LuaValue __add         = luao::LuaValue(std::make_shared<luao::LuaString>("__add"),         LuaType::STRING);
-    luao::LuaValue __sub         = luao::LuaValue(std::make_shared<luao::LuaString>("__sub"),         LuaType::STRING);
-    luao::LuaValue __mul         = luao::LuaValue(std::make_shared<luao::LuaString>("__mul"),         LuaType::STRING);
-    luao::LuaValue __div         = luao::LuaValue(std::make_shared<luao::LuaString>("__div"),         LuaType::STRING);
-    luao::LuaValue __unm         = luao::LuaValue(std::make_shared<luao::LuaString>("__unm"),         LuaType::STRING);
-    luao::LuaValue __mod         = luao::LuaValue(std::make_shared<luao::LuaString>("__mod"),         LuaType::STRING);
-    luao::LuaValue __pow         = luao::LuaValue(std::make_shared<luao::LuaString>("__pow"),         LuaType::STRING);
-    luao::LuaValue __idiv        = luao::LuaValue(std::make_shared<luao::LuaString>("__idiv"),        LuaType::STRING);
-    luao::LuaValue __band        = luao::LuaValue(std::make_shared<luao::LuaString>("__band"),        LuaType::STRING);
-    luao::LuaValue __bor         = luao::LuaValue(std::make_shared<luao::LuaString>("__bor"),         LuaType::STRING);
-    luao::LuaValue __bxor        = luao::LuaValue(std::make_shared<luao::LuaString>("__bxor"),        LuaType::STRING);
-    luao::LuaValue __bnot        = luao::LuaValue(std::make_shared<luao::LuaString>("__bnot"),        LuaType::STRING);
-    luao::LuaValue __shl         = luao::LuaValue(std::make_shared<luao::LuaString>("__shl"),         LuaType::STRING);
-    luao::LuaValue __shr         = luao::LuaValue(std::make_shared<luao::LuaString>("__shr"),         LuaType::STRING);
-    luao::LuaValue __eq          = luao::LuaValue(std::make_shared<luao::LuaString>("__eq"),          LuaType::STRING);
-    luao::LuaValue __lt          = luao::LuaValue(std::make_shared<luao::LuaString>("__lt"),          LuaType::STRING);
-    luao::LuaValue __le          = luao::LuaValue(std::make_shared<luao::LuaString>("__le"),          LuaType::STRING);
-    luao::LuaValue __concat      = luao::LuaValue(std::make_shared<luao::LuaString>("__concat"),      LuaType::STRING);
-    luao::LuaValue __len         = luao::LuaValue(std::make_shared<luao::LuaString>("__len"),         LuaType::STRING);
-    luao::LuaValue __tostring    = luao::LuaValue(std::make_shared<luao::LuaString>("__tostring"),    LuaType::STRING);
-    luao::LuaValue __metatable   = luao::LuaValue(std::make_shared<luao::LuaString>("__metatable"),   LuaType::STRING);
-    luao::LuaValue __name        = luao::LuaValue(std::make_shared<luao::LuaString>("__name"),        LuaType::STRING);
-    luao::LuaValue __pairs       = luao::LuaValue(std::make_shared<luao::LuaString>("__pairs"),       LuaType::STRING);
-    luao::LuaValue __ipairs      = luao::LuaValue(std::make_shared<luao::LuaString>("__ipairs"),      LuaType::STRING); 
-    luao::LuaValue __index       = luao::LuaValue(std::make_shared<luao::LuaString>("__index"),       LuaType::STRING);
-    luao::LuaValue __newindex    = luao::LuaValue(std::make_shared<luao::LuaString>("__newindex"),    LuaType::STRING);
-    luao::LuaValue __call        = luao::LuaValue(std::make_shared<luao::LuaString>("__call"),        LuaType::STRING);
-    luao::LuaValue __mode        = luao::LuaValue(std::make_shared<luao::LuaString>("__mode"),        LuaType::STRING);
-    luao::LuaValue __close       = luao::LuaValue(std::make_shared<luao::LuaString>("__close"),       LuaType::STRING);
-    luao::LuaValue __gc          = luao::LuaValue(std::make_shared<luao::LuaString>("__gc"),          LuaType::STRING);
-    // luao extension
-    luao::LuaValue __iterator    = luao::LuaValue(std::make_shared<luao::LuaString>("__iterator"),    LuaType::STRING);
-    luao::LuaValue __newinstance = luao::LuaValue(std::make_shared<luao::LuaString>("__newinstance"), LuaType::STRING);
+    const luao::LuaValue __add         = luao::LuaValue(std::make_shared<luao::LuaString>("__add"),         LuaType::STRING);
+    const luao::LuaValue __sub         = luao::LuaValue(std::make_shared<luao::LuaString>("__sub"),         LuaType::STRING);
+    const luao::LuaValue __mul         = luao::LuaValue(std::make_shared<luao::LuaString>("__mul"),         LuaType::STRING);
+    const luao::LuaValue __div         = luao::LuaValue(std::make_shared<luao::LuaString>("__div"),         LuaType::STRING);
+    const luao::LuaValue __unm         = luao::LuaValue(std::make_shared<luao::LuaString>("__unm"),         LuaType::STRING);
+    const luao::LuaValue __mod         = luao::LuaValue(std::make_shared<luao::LuaString>("__mod"),         LuaType::STRING);
+    const luao::LuaValue __pow         = luao::LuaValue(std::make_shared<luao::LuaString>("__pow"),         LuaType::STRING);
+    const luao::LuaValue __idiv        = luao::LuaValue(std::make_shared<luao::LuaString>("__idiv"),        LuaType::STRING);
+    const luao::LuaValue __band        = luao::LuaValue(std::make_shared<luao::LuaString>("__band"),        LuaType::STRING);
+    const luao::LuaValue __bor         = luao::LuaValue(std::make_shared<luao::LuaString>("__bor"),         LuaType::STRING);
+    const luao::LuaValue __bxor        = luao::LuaValue(std::make_shared<luao::LuaString>("__bxor"),        LuaType::STRING);
+    const luao::LuaValue __bnot        = luao::LuaValue(std::make_shared<luao::LuaString>("__bnot"),        LuaType::STRING);
+    const luao::LuaValue __shl         = luao::LuaValue(std::make_shared<luao::LuaString>("__shl"),         LuaType::STRING);
+    const luao::LuaValue __shr         = luao::LuaValue(std::make_shared<luao::LuaString>("__shr"),         LuaType::STRING);
+    const luao::LuaValue __eq          = luao::LuaValue(std::make_shared<luao::LuaString>("__eq"),          LuaType::STRING);
+    const luao::LuaValue __lt          = luao::LuaValue(std::make_shared<luao::LuaString>("__lt"),          LuaType::STRING);
+    const luao::LuaValue __le          = luao::LuaValue(std::make_shared<luao::LuaString>("__le"),          LuaType::STRING);
+    const luao::LuaValue __concat      = luao::LuaValue(std::make_shared<luao::LuaString>("__concat"),      LuaType::STRING);
+    const luao::LuaValue __len         = luao::LuaValue(std::make_shared<luao::LuaString>("__len"),         LuaType::STRING);
+    const luao::LuaValue __tostring    = luao::LuaValue(std::make_shared<luao::LuaString>("__tostring"),    LuaType::STRING);
+    const luao::LuaValue __metatable   = luao::LuaValue(std::make_shared<luao::LuaString>("__metatable"),   LuaType::STRING);
+    const luao::LuaValue __name        = luao::LuaValue(std::make_shared<luao::LuaString>("__name"),        LuaType::STRING);
+    const luao::LuaValue __pairs       = luao::LuaValue(std::make_shared<luao::LuaString>("__pairs"),       LuaType::STRING);
+    const luao::LuaValue __ipairs      = luao::LuaValue(std::make_shared<luao::LuaString>("__ipairs"),      LuaType::STRING); 
+    const luao::LuaValue __index       = luao::LuaValue(std::make_shared<luao::LuaString>("__index"),       LuaType::STRING);
+    const luao::LuaValue __newindex    = luao::LuaValue(std::make_shared<luao::LuaString>("__newindex"),    LuaType::STRING);
+    const luao::LuaValue __call        = luao::LuaValue(std::make_shared<luao::LuaString>("__call"),        LuaType::STRING);
+    const luao::LuaValue __mode        = luao::LuaValue(std::make_shared<luao::LuaString>("__mode"),        LuaType::STRING);
+    const luao::LuaValue __close       = luao::LuaValue(std::make_shared<luao::LuaString>("__close"),       LuaType::STRING);
+    const luao::LuaValue __gc          = luao::LuaValue(std::make_shared<luao::LuaString>("__gc"),          LuaType::STRING);
+    const luao::LuaValue __iterator    = luao::LuaValue(std::make_shared<luao::LuaString>("__iterator"),    LuaType::STRING);
+    const luao::LuaValue __newinstance = luao::LuaValue(std::make_shared<luao::LuaString>("__newinstance"), LuaType::STRING);
 }
 
 namespace luao {
@@ -67,7 +66,7 @@ void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const I
     std::cerr << "#\n";
     std::cerr << "# Bytecode around PC\n";
     if (frame && frame->closure) {
-        LuaFunction* func = frame->closure->getFunction();
+        std::shared_ptr<LuaFunction> func = frame->closure->getFunction();
         const auto& code = func->getBytecode();
         int idx = static_cast<int>(current_pc - &code[0]);
         int start = std::max(0, idx - CRITICAL_DUMP_CONTEXT_LINES);
@@ -87,7 +86,7 @@ void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const I
     const auto& stack = vm.get_stack();
     int top = std::min(static_cast<int>(stack.size()), frame ? frame->stack_base + CRITICAL_DUMP_CONTEXT_LINES * 2 : static_cast<int>(stack.size()));
     for (int i = 0; i < top; i++) {
-        const LuaValue& val = stack[i];
+        const LuaValue& val = *stack[i];
         std::cerr << "#" << std::setw(3) << i << ": " << val.typeName() << " ";
         if (val.getObject()) {
             std::cerr << val.getObject()->toString() << " (" << val.typeName() << ")";
@@ -115,26 +114,32 @@ void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const I
 static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
     const auto& updescs = closure->getFunction()->getUpvalDescs();
     auto& stack = vm.get_stack_mutable();
-    LuaClosure* parent = nullptr;
+    std::shared_ptr<LuaClosure> parent = nullptr;
     if (!vm.get_call_stack().empty()) parent = vm.get_call_stack().back().closure;
 
     for (const auto& desc : updescs) {
         std::shared_ptr<UpValue> uv = nullptr;
 
         if (desc.name == "_ENV") {
+            std::shared_ptr<LuaValue> env_v;
             if (parent) {
-                uv = parent->getUpvalues()[desc.idx];
+                env_v = parent->getUpvalues()[desc.idx]->getLocation().lock();
+                if (!env_v || env_v->getType() != LuaType::TABLE) {
+                    // fallback: まだない場合は新規 LuaTable
+                    env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
+                }
             } else {
-                auto env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
-                uv = std::make_shared<UpValue>(env_v);
+                env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
             }
+            uv = std::make_shared<UpValue>(env_v);
         } else if (desc.inStack) {
-            uv = new UpValue(&stack[desc.idx]);
+            // スタック上の LuaValue をコピーして shared_ptr で保持
+            uv = std::make_shared<UpValue>(stack[desc.idx]);
         } else {
             if (parent) {
                 uv = parent->getUpvalues()[desc.idx];
             } else {
-                uv = std::make_shared<UpValue>(&stack[0]);
+                uv = std::make_shared<UpValue>(stack[0]);
             }
         }
 
@@ -146,7 +151,7 @@ VM::VM() : top(0) {
     stack.resize(256);
 }
 
-void VM::load(LuaClosure* main_closure) {
+void VM::load(std::shared_ptr<LuaClosure> main_closure) {
     call_stack.clear();
     stack.clear();
     stack.resize(256);
@@ -171,16 +176,16 @@ int VM::get_top() {
 
 LuaValue VM::get_stack_top() {
     if (top > 0) {
-        return stack[top - 1];
+        return *stack[top - 1];
     }
     return LuaValue(); // Return nil if stack is empty
 }
 
-const std::vector<LuaValue>& VM::get_stack() const {
+const std::vector<std::shared_ptr<LuaValue>>& VM::get_stack() const {
     return stack;
 }
 
-std::vector<LuaValue>& VM::get_stack_mutable() {
+std::vector<std::shared_ptr<LuaValue>>& VM::get_stack_mutable() {
     return stack;
 }
 
@@ -206,10 +211,10 @@ void VM::set_trace(bool trace) {
 
 static luaNumber get_number_from_value(const LuaValue& val) {
     if (val.getType() == LuaType::NUMBER) {
-        if (auto* num = dynamic_cast<const LuaNumber*>(val.getObject())) {
+        if (auto num = std::dynamic_pointer_cast<const LuaNumber>(val.getObject())) {
             return num->getValue();
         }
-        if (auto* integer = dynamic_cast<const LuaInteger*>(val.getObject())) {
+        if (auto integer = std::dynamic_pointer_cast<const LuaInteger>(val.getObject())) {
             return static_cast<luaNumber>(integer->getValue());
         }
     }
@@ -250,12 +255,16 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
     auto& stack = vm.get_stack_mutable();
     auto& call_stack = vm.get_call_stack_mutable();
 
+    if (call_stack.size() >= LUAI_MAXCALLS) {
+        throw std::runtime_error("call stack overflow");
+    }
+
     if (fn.getType() == LuaType::FUNCTION) {
         // Lua 関数 (LuaClosure)
-        if (auto* closure = dynamic_cast<LuaClosure*>(fn.getObject())) {
+        if (auto closure = std::dynamic_pointer_cast<LuaClosure>(fn.getObject())) {
             int new_stack_base = base;
 
-            std::cout << "trying to call function " << closure->getFunction()->getSource() << std::endl;
+            //std::cout << "trying to call function " << closure->getFunction()->getSource() << std::endl;
 
             // 引数を新フレームにコピー
             for (int j = 0; j < num_args; ++j)
@@ -267,13 +276,13 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
         }
 
         // C 関数 (LuaNativeFunction)
-        if (auto* cfunc = dynamic_cast<LuaNativeFunction*>(fn.getObject())) {
+        if (auto cfunc = std::dynamic_pointer_cast<LuaNativeFunction>(fn.getObject())) {
             int nret = cfunc->call(vm, base + 1, num_args);
 
             int ret_count = (num_results < 0) ? nret : num_results;
 
             for (int j = 0; j < ret_count; ++j)
-                stack[base + j] = (j < nret) ? stack[base + 1 + j] : LuaValue();
+                *stack[base + j] = (j < nret) ? *stack[base + 1 + j] : LuaValue();
 
             vm.set_top(base + ret_count);
             return;
@@ -281,23 +290,23 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
     }
 
     // __call metamethod
-    if (auto* gc = dynamic_cast<LuaGCObject*>(fn.getObject())) {
+    if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(fn.getObject())) {
         LuaValue mmf = gc->getMetamethod(mm::__call);
         if (mmf.getType() == LuaType::FUNCTION) {
             int call_base = base;
 
             // metamethod を関数位置に置く
-            stack[call_base] = mmf;
+            *stack[call_base] = mmf;
 
             // self を先頭引数に
             for (int j = num_args; j > 0; --j)
                 stack[call_base + j] = stack[base + j];
-            stack[call_base + 1] = fn;
+            *stack[call_base + 1] = fn;
 
             int new_num_args = num_args + 1;
 
             // 再帰呼び出し
-            vcall(vm, frame, stack[call_base], call_base, new_num_args, num_results);
+            vcall(vm, frame, *stack[call_base], call_base, new_num_args, num_results);
             return;
         }
     }
@@ -314,7 +323,7 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
 }
 
 static bool checkluaint(const LuaValue& value) {
-    if (auto* luaint = dynamic_cast<const LuaInteger*>(value.getObject())) {
+    if (auto luaint = std::dynamic_pointer_cast<const LuaInteger>(value.getObject())) {
         return true;
     } else {
         return false;
@@ -326,43 +335,43 @@ bool VM::as_bool(const LuaValue& value) {
         return false;
     }
     if (value.getType() == LuaType::BOOLEAN) {
-        if (auto* b = dynamic_cast<const LuaBool*>(value.getObject())) {
+        if (auto b = std::dynamic_pointer_cast<const LuaBool>(value.getObject())) {
             return b->getValue();
         }
     }
     return true;
 }
 
-static LuaValue try_arithmetic_metamethod(VM& vm, const LuaValue& mt_key, const LuaValue& a, const LuaValue& b) {
+static std::shared_ptr<LuaValue> try_arithmetic_metamethod(VM& vm, const LuaValue& mt_key, const LuaValue& a, const LuaValue& b) {
     auto& stack = vm.get_stack_mutable();
     auto& call_stack = vm.get_call_stack_mutable();
 
     LuaValue mm;
-    if (auto* gc = dynamic_cast<LuaGCObject*>(a.getObject())) {
+    if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(a.getObject())) {
         mm = gc->getMetamethod(mt_key);
     }
-    if (!mm.getObject() && dynamic_cast<LuaGCObject*>(b.getObject())) {
-        mm = dynamic_cast<LuaGCObject*>(b.getObject())->getMetamethod(mt_key);
+    if (!mm.getObject() && std::dynamic_pointer_cast<LuaGCObject>(b.getObject())) {
+        mm = std::dynamic_pointer_cast<LuaGCObject>(b.getObject())->getMetamethod(mt_key);
     }
 
     if (!mm.getObject()) {
         std::cerr << "attempt to perform " << (mt_key.getObject() == mm::__concat.getObject() ? "concatenate" : "arithmetic") << " on a " << a.typeName() << " value" << std::endl;
-        return LuaValue(); // nil
+        return nullptr; // nil
     }
 
     // vcall を使って __add を呼ぶ
     int stack_base = vm.get_top();
-    stack.push_back(mm); // metamethod を関数位置に
-    stack.push_back(a);  // self
-    stack.push_back(b);  // 引数
+    stack.push_back(std::make_shared<LuaValue>(mm)); // metamethod を関数位置に
+    stack.push_back(std::make_shared<LuaValue>(a));  // self
+    stack.push_back(std::make_shared<LuaValue>(b));  // 引数
     int num_args = 2;
     int num_results = 1;
 
     CallInfo* frame = &call_stack.back();
     vcall(vm, frame, mm, stack_base, num_args, num_results);
 
-    LuaValue result = stack[stack_base];  // 戻り値は stack[stack_base] に置かれる
-    vm.set_top(stack_base + 1);                  // stack top 更新
+    auto result = stack[stack_base]; // shared_ptr でそのまま取得
+    vm.set_top(stack_base + 1);
     return result;
 }
 
@@ -371,14 +380,14 @@ static bool try_call_bin_metamethod(VM& vm, CallInfo* frame, const LuaValue& key
     auto& stack = vm.get_stack_mutable();
     int top_before = vm.get_top();
 
-    if (auto* gc = dynamic_cast<LuaGCObject*>(v1.getObject())) {
+    if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(v1.getObject())) {
         LuaValue mmf = gc->getMetamethod(key);
         if (mmf.getType() == LuaType::FUNCTION) {
             // vcall で metamethod を呼ぶ
             int stack_base = top_before;
-            stack.push_back(mmf);
-            stack.push_back(v1);
-            stack.push_back(v2);
+            stack.push_back(std::make_shared<LuaValue>(mmf));
+            stack.push_back(std::make_shared<LuaValue>(v1));
+            stack.push_back(std::make_shared<LuaValue>(v2));
             int num_args = 2;
             int num_results = 1;
 
@@ -403,12 +412,12 @@ LuaValue call_metamethod(VM& vm, const LuaValue& mt_key, const std::vector<LuaVa
 
     // args[0] と args[1]（存在すれば）から metamethod を探す
     if (!args.empty()) {
-        if (auto* gc = dynamic_cast<LuaGCObject*>(args[0].getObject())) {
+        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(args[0].getObject())) {
             mm = gc->getMetamethod(mt_key);
         }
     }
     if (!mm.getObject() && args.size() > 1) {
-        if (auto* gc = dynamic_cast<LuaGCObject*>(args[1].getObject())) {
+        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(args[1].getObject())) {
             mm = gc->getMetamethod(mt_key);
         }
     }
@@ -420,9 +429,9 @@ LuaValue call_metamethod(VM& vm, const LuaValue& mt_key, const std::vector<LuaVa
 
     // スタックに metamethod と引数を配置
     int stack_base = vm.get_top();
-    stack.push_back(mm);
+    stack.push_back(std::make_shared<LuaValue>(mm));
     for (const auto& arg : args) {
-        stack.push_back(arg);
+        stack.push_back(std::make_shared<LuaValue>(arg));
     }
 
     int num_args = static_cast<int>(args.size());
@@ -431,7 +440,7 @@ LuaValue call_metamethod(VM& vm, const LuaValue& mt_key, const std::vector<LuaVa
     CallInfo* frame = &call_stack.back();
     vcall(vm, frame, mm, stack_base, num_args, num_results);
 
-    LuaValue result = stack[stack_base]; // 戻り値
+    LuaValue& result = *stack[stack_base]; // 戻り値
     vm.set_top(stack_base + 1);
 
     return result;
@@ -440,17 +449,17 @@ LuaValue call_metamethod(VM& vm, const LuaValue& mt_key, const std::vector<LuaVa
 // Arithmetic operations with metamethod support
 LuaValue VM::add(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
-        auto* int_a = dynamic_cast<LuaInteger*>(a.getObject());
-        auto* int_b = dynamic_cast<LuaInteger*>(b.getObject());
+        auto int_a = std::dynamic_pointer_cast<LuaInteger>(a.getObject());
+        auto int_b = std::dynamic_pointer_cast<LuaInteger>(b.getObject());
         
         if (int_a && int_b) {
             luaInt val_a = int_a->getValue();
             luaInt val_b = int_b->getValue();
-            return LuaValue(new LuaInteger(val_a + val_b), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaInteger>(val_a + val_b), LuaType::NUMBER);
         } else {
             luaNumber na = get_number_from_value(a);
             luaNumber nb = get_number_from_value(b);
-            return LuaValue(new LuaNumber(na + nb), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaNumber>(na + nb), LuaType::NUMBER);
         }
     } else {
         return try_arithmetic_metamethod(*this, mm::__add, a, b);
@@ -459,17 +468,17 @@ LuaValue VM::add(const LuaValue& a, const LuaValue& b) {
 
 LuaValue VM::sub(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
-        auto* int_a = dynamic_cast<LuaInteger*>(a.getObject());
-        auto* int_b = dynamic_cast<LuaInteger*>(b.getObject());
+        auto int_a = std::dynamic_pointer_cast<LuaInteger>(a.getObject());
+        auto int_b = std::dynamic_pointer_cast<LuaInteger>(b.getObject());
         
         if (int_a && int_b) {
             luaInt val_a = int_a->getValue();
             luaInt val_b = int_b->getValue();
-            return LuaValue(new LuaInteger(val_a - val_b), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaInteger>(val_a - val_b), LuaType::NUMBER);
         } else {
             luaNumber na = get_number_from_value(a);
             luaNumber nb = get_number_from_value(b);
-            return LuaValue(new LuaNumber(na - nb), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaNumber>(na - nb), LuaType::NUMBER);
         }
     } else {
         return try_arithmetic_metamethod(*this, mm::__sub, a, b);
@@ -478,17 +487,17 @@ LuaValue VM::sub(const LuaValue& a, const LuaValue& b) {
 
 LuaValue VM::mul(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
-        auto* int_a = dynamic_cast<LuaInteger*>(a.getObject());
-        auto* int_b = dynamic_cast<LuaInteger*>(b.getObject());
+        auto int_a = std::dynamic_pointer_cast<LuaInteger>(a.getObject());
+        auto int_b = std::dynamic_pointer_cast<LuaInteger>(b.getObject());
         
         if (int_a && int_b) {
             luaInt val_a = int_a->getValue();
             luaInt val_b = int_b->getValue();
-            return LuaValue(new LuaInteger(val_a * val_b), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaInteger>(val_a * val_b), LuaType::NUMBER);
         } else {
             luaNumber na = get_number_from_value(a);
             luaNumber nb = get_number_from_value(b);
-            return LuaValue(new LuaNumber(na * nb), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaNumber>(na * nb), LuaType::NUMBER);
         }
     } else {
         return try_arithmetic_metamethod(*this, mm::__mul, a, b);
@@ -499,7 +508,7 @@ LuaValue VM::div(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaNumber na = get_number_from_value(a);
         luaNumber nb = get_number_from_value(b);
-        return LuaValue(new LuaNumber(na / nb), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaNumber>(na / nb), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__div, a, b);
     }
@@ -511,7 +520,7 @@ LuaValue VM::mod(const LuaValue& a, const LuaValue& b) {
         luaNumber nb = get_number_from_value(b);
         luaNumber res = std::fmod(na, nb);
         if (res < 0) res += nb;
-        return LuaValue(new LuaNumber(res), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaNumber>(res), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__mod, a, b);
     }
@@ -521,7 +530,7 @@ LuaValue VM::pow(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaNumber na = get_number_from_value(a);
         luaNumber nb = get_number_from_value(b);
-        return LuaValue(new LuaNumber(std::pow(na, nb)), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaNumber>(std::pow(na, nb)), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__pow, a, b);
     }
@@ -541,11 +550,11 @@ LuaValue VM::idiv(const LuaValue& a, const LuaValue& b) {
             luaInt ib = static_cast<luaInt>(nb);
 
             luaInt result = static_cast<luaInt>(std::floor(static_cast<luaNumber>(ia) / ib));
-            return LuaValue(new LuaInteger(result), LuaType::NUMBER);
+            return LuaValue(std::make_shared<LuaInteger>(result), LuaType::NUMBER);
         }
 
         luaNumber result = std::floor(na / nb);
-        return LuaValue(new LuaNumber(result), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaNumber>(result), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__idiv, a, b);
     }
@@ -553,10 +562,10 @@ LuaValue VM::idiv(const LuaValue& a, const LuaValue& b) {
 
 LuaValue VM::unm(const LuaValue& a) {
     if (a.getType() == LuaType::NUMBER) {
-        if (auto* int_a = dynamic_cast<LuaInteger*>(a.getObject())) {
-            return LuaValue(new LuaInteger(-int_a->getValue()), LuaType::NUMBER);
-        } else if (auto* num_a = dynamic_cast<LuaNumber*>(a.getObject())) {
-            return LuaValue(new LuaNumber(-num_a->getValue()), LuaType::NUMBER);
+        if (auto int_a = std::dynamic_pointer_cast<LuaInteger>(a.getObject())) {
+            return LuaValue(std::make_shared<LuaInteger>(-int_a->getValue()), LuaType::NUMBER);
+        } else if (auto num_a = std::dynamic_pointer_cast<LuaNumber>(a.getObject())) {
+            return LuaValue(std::make_shared<LuaNumber>(-num_a->getValue()), LuaType::NUMBER);
         } else {
             throw std::runtime_error("LuaValue type NUMBER has unknown internal object");
         }
@@ -567,10 +576,10 @@ LuaValue VM::unm(const LuaValue& a) {
 
 LuaValue VM::len(const LuaValue& a) {
     if (a.getType() == LuaType::STRING) {
-        auto* str = dynamic_cast<LuaString*>(a.getObject());
-        return LuaValue(new LuaInteger(str->getValue().size()), LuaType::NUMBER);
+        auto str = std::dynamic_pointer_cast<LuaString>(a.getObject());
+        return LuaValue(std::make_shared<LuaInteger>(str->getValue().size()), LuaType::NUMBER);
     } else if (a.getType() == LuaType::TABLE) {
-        auto* table = dynamic_cast<LuaTable*>(a.getObject());
+        auto table = std::dynamic_pointer_cast<LuaTable>(a.getObject());
         LuaValue mm = table->getMetamethod(mm::__len);
         if (mm.getObject()) {
             return call_metamethod(*this, mm::__len, {LuaValue(table, LuaType::TABLE)});
@@ -586,9 +595,9 @@ LuaValue VM::len(const LuaValue& a) {
 
 LuaValue VM::concat(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::STRING && b.getType() == LuaType::STRING) {
-        auto* str_a = dynamic_cast<LuaString*>(a.getObject());
-        auto* str_b = dynamic_cast<LuaString*>(b.getObject());
-        return LuaValue(new LuaString(str_a->getValue() + str_b->getValue()), LuaType::STRING);
+        auto str_a = std::dynamic_pointer_cast<LuaString>(a.getObject());
+        auto str_b = std::dynamic_pointer_cast<LuaString>(b.getObject());
+        return LuaValue(std::make_shared<LuaString>(str_a->getValue() + str_b->getValue()), LuaType::STRING);
     } else {
         return try_arithmetic_metamethod(*this, mm::__concat, a, b);
     }
@@ -599,7 +608,7 @@ LuaValue VM::band(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
-        return LuaValue(new LuaInteger(ia & ib), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(ia & ib), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__band, a, b);
     }
@@ -609,7 +618,7 @@ LuaValue VM::bor(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
-        return LuaValue(new LuaInteger(ia | ib), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(ia | ib), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__bor, a, b);
     }
@@ -619,7 +628,7 @@ LuaValue VM::bxor(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
-        return LuaValue(new LuaInteger(ia ^ ib), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(ia ^ ib), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__bxor, a, b);
     }
@@ -628,7 +637,7 @@ LuaValue VM::bxor(const LuaValue& a, const LuaValue& b) {
 LuaValue VM::bnot(const LuaValue& a) {
     if (a.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
-        return LuaValue(new LuaInteger(~ia), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(~ia), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__bnot, a, LuaValue());
     }
@@ -638,7 +647,7 @@ LuaValue VM::shl(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
-        return LuaValue(new LuaInteger(ia << ib), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(ia << ib), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__shl, a, b);
     }
@@ -648,7 +657,7 @@ LuaValue VM::shr(const LuaValue& a, const LuaValue& b) {
     if (a.getType() == LuaType::NUMBER && b.getType() == LuaType::NUMBER) {
         luaInt ia = static_cast<luaInt>(get_number_from_value(a));
         luaInt ib = static_cast<luaInt>(get_number_from_value(b));
-        return LuaValue(new LuaInteger(ia >> ib), LuaType::NUMBER);
+        return LuaValue(std::make_shared<LuaInteger>(ia >> ib), LuaType::NUMBER);
     } else {
         return try_arithmetic_metamethod(*this, mm::__shr, a, b);
     }
@@ -671,14 +680,14 @@ bool VM::eq(const LuaValue& a, const LuaValue& b) {
     }
     
     if (a.getType() == LuaType::STRING) {
-        auto* str_a = dynamic_cast<LuaString*>(a.getObject());
-        auto* str_b = dynamic_cast<LuaString*>(b.getObject());
+        auto str_a = std::dynamic_pointer_cast<LuaString>(a.getObject());
+        auto str_b = std::dynamic_pointer_cast<LuaString>(b.getObject());
         return str_a->getValue() == str_b->getValue();
     }
     
     if (a.getType() == LuaType::BOOLEAN) {
-        auto* bool_a = dynamic_cast<LuaBool*>(a.getObject());
-        auto* bool_b = dynamic_cast<LuaBool*>(b.getObject());
+        auto bool_a = std::dynamic_pointer_cast<LuaBool>(a.getObject());
+        auto bool_b = std::dynamic_pointer_cast<LuaBool>(b.getObject());
         return bool_a->getValue() == bool_b->getValue();
     }
     
@@ -692,8 +701,8 @@ bool VM::lt(const LuaValue& a, const LuaValue& b) {
         luaNumber nb = get_number_from_value(b);
         return na < nb;
     } else if (a.getType() == LuaType::STRING && b.getType() == LuaType::STRING) {
-        auto* str_a = dynamic_cast<LuaString*>(a.getObject());
-        auto* str_b = dynamic_cast<LuaString*>(b.getObject());
+        auto str_a = std::dynamic_pointer_cast<LuaString>(a.getObject());
+        auto str_b = std::dynamic_pointer_cast<LuaString>(b.getObject());
         return str_a->getValue() < str_b->getValue();
     } else {
         // Metamethod handling would go here
@@ -707,8 +716,8 @@ bool VM::le(const LuaValue& a, const LuaValue& b) {
         luaNumber nb = get_number_from_value(b);
         return na <= nb;
     } else if (a.getType() == LuaType::STRING && b.getType() == LuaType::STRING) {
-        auto* str_a = dynamic_cast<LuaString*>(a.getObject());
-        auto* str_b = dynamic_cast<LuaString*>(b.getObject());
+        auto str_a = std::dynamic_pointer_cast<LuaString>(a.getObject());
+        auto str_b = std::dynamic_pointer_cast<LuaString>(b.getObject());
         return str_a->getValue() <= str_b->getValue();
     } else {
         // Metamethod handling would go here
@@ -720,10 +729,10 @@ void VM::run() {
     while (!call_stack.empty()) {
         CallInfo* frame = &call_stack.back();
         const Instruction* pc = frame->pc;
-        LuaFunction* func = frame->closure->getFunction();
+        std::shared_ptr<LuaFunction> func = frame->closure->getFunction();
 
         for (;;) {
-            if (stack.size() >= LUAO_MAXSTACK) {
+            if (stack.size() >= LUAI_MAXSTACK) {
                 throw std::runtime_error("stack overflow");
             }
 
@@ -745,21 +754,21 @@ void VM::run() {
                 case OpCode::LOADI: {
                     int a = GETARG_A(i); /* args are 'A sBx' */
                     int sbx = GETARG_sBx(i);
-                    stack[frame->stack_base + a] = LuaValue(new LuaInteger(sbx), LuaType::NUMBER);
+                    *stack[frame->stack_base + a] = LuaValue(std::make_shared<LuaInteger>(sbx), LuaType::NUMBER);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::LOADF: {
                     int a = GETARG_A(i); /* args are 'A sBx' */
                     int sbx = GETARG_sBx(i);
-                    stack[frame->stack_base + a] = LuaValue(new LuaNumber(static_cast<luaNumber>(sbx)), LuaType::NUMBER);
+                    *stack[frame->stack_base + a] = LuaValue(std::make_shared<LuaNumber>(static_cast<luaNumber>(sbx)), LuaType::NUMBER);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::LOADK: {
                     int a = GETARG_A(i); /* args are 'A Bx' */
                     int bx = GETARG_Bx(i);
-                    stack[frame->stack_base + a] = func->getConstants()[bx];
+                    *stack[frame->stack_base + a] = func->getConstants()[bx];
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -768,26 +777,26 @@ void VM::run() {
                     // LOADKX uses the next instruction as extra argument
                     Instruction extra = *pc++;
                     int bx = GETARG_Bx(extra);
-                    stack[frame->stack_base + a] = func->getConstants()[bx];
+                    *stack[frame->stack_base + a] = func->getConstants()[bx];
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::LOADFALSE: {
                     int a = GETARG_A(i); /* args are 'A' */
-                    stack[frame->stack_base + a] = LuaValue(FALSE_OBJ, LuaType::BOOLEAN);
+                    *stack[frame->stack_base + a] = LuaValue(FALSE_OBJ, LuaType::BOOLEAN);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::LFALSESKIP: {
                     int a = GETARG_A(i); /* args are 'A' */
-                    stack[frame->stack_base + a] = LuaValue(FALSE_OBJ, LuaType::BOOLEAN);
+                    *stack[frame->stack_base + a] = LuaValue(FALSE_OBJ, LuaType::BOOLEAN);
                     top = frame->stack_base + a + 1;
                     pc++; // skip next instruction
                     break;
                 }
                 case OpCode::LOADTRUE: {
                     int a = GETARG_A(i); /* args are 'A' */
-                    stack[frame->stack_base + a] = LuaValue(TRUE_OBJ, LuaType::BOOLEAN);
+                    *stack[frame->stack_base + a] = LuaValue(TRUE_OBJ, LuaType::BOOLEAN);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -795,7 +804,7 @@ void VM::run() {
                     int a = GETARG_A(i); /* args are 'A B' */
                     int b = GETARG_B(i);
                     for (int j = 0; j <= b; j++) {
-                        stack[frame->stack_base + a + j] = LuaValue(); // nil
+                        *stack[frame->stack_base + a + j] = LuaValue(); // nil
                     }
                     top = frame->stack_base + a + b + 1;
                     break;
@@ -806,17 +815,25 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
+                                
                     auto& upvals = frame->closure->getUpvalues();
                     if (b < 0 || b >= static_cast<int>(upvals.size())) {
                         throw std::runtime_error("GETTABUP: invalid upvalue index");
                     }
-                    LuaValue t = upvals[b]->getValue();
+                
+                    auto loc = upvals[b]->getLocation().lock();
+                    if (!loc) {
+                        throw std::runtime_error("GETTABUP: upvalue is closed");
+                    }
+                
                     LuaValue k = func->getConstants()[c];
-                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
-                        stack[frame->stack_base + a] = table->get(k);
+                
+                    if (auto table = std::dynamic_pointer_cast<LuaTable>(loc->getObject())) {
+                        *stack[frame->stack_base + a] = table->get(k);
                     } else {
                         throw std::runtime_error("GETTABUP: non-table upvalue");
                     }
+                
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -825,17 +842,17 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + b];
-                    LuaValue k = stack[frame->stack_base + c];
+                    LuaValue t = *stack[frame->stack_base + b];
+                    LuaValue k = *stack[frame->stack_base + c];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
-                            stack[frame->stack_base + a] = table->get(k);
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
+                            *stack[frame->stack_base + a] = table->get(k);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -849,16 +866,16 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + b];
+                    LuaValue t = *stack[frame->stack_base + b];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
-                            stack[frame->stack_base + a] = table->get(c);
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
+                            *stack[frame->stack_base + a] = table->get(c);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -873,17 +890,17 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + b];
+                    LuaValue t = *stack[frame->stack_base + b];
                     LuaValue k = func->getConstants()[c];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
-                            stack[frame->stack_base + a] = table->get(k);
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
+                            *stack[frame->stack_base + a] = table->get(k);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -899,10 +916,15 @@ void VM::run() {
                     if (a < 0 || a >= static_cast<int>(upvals.size())) {
                         throw std::runtime_error("SETTABUP: invalid upvalue index");
                     }
-                    LuaValue t = upvals[a]->getValue();
-                    LuaValue k = func->getConstants()[b];
-                    LuaValue v = stack[frame->stack_base + c];
-                    if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                    auto loc = upvals[a]->getLocation().lock();
+                    if (!loc) {
+                        std::cerr << "SETTABUP: upvalue is closed" << std::endl;
+                        break;
+                    }
+
+                    if (auto table = std::dynamic_pointer_cast<LuaTable>(loc->getObject())) {
+                        LuaValue k = func->getConstants()[b];
+                        LuaValue v = *stack[frame->stack_base + c];
                         table->set(k, v);
                     } else {
                         std::cerr << "SETTABUP on non-table upvalue" << std::endl;
@@ -914,18 +936,18 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + a];
-                    LuaValue k = stack[frame->stack_base + b];
-                    LuaValue v = stack[frame->stack_base + c];
+                    LuaValue t = *stack[frame->stack_base + a];
+                    LuaValue k = *stack[frame->stack_base + b];
+                    LuaValue v = *stack[frame->stack_base + c];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
                             table->set(k, v);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -939,17 +961,17 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + a];
-                    LuaValue v = stack[frame->stack_base + c];
+                    LuaValue t = *stack[frame->stack_base + a];
+                    LuaValue v = *stack[frame->stack_base + c];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
                             table->set(b, v);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -963,18 +985,18 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
-                    LuaValue t = stack[frame->stack_base + a];
+                    LuaValue t = *stack[frame->stack_base + a];
                     LuaValue k = func->getConstants()[b];
-                    LuaValue v = stack[frame->stack_base + c];
+                    LuaValue v = *stack[frame->stack_base + c];
 
                     if (t.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
                             table->set(k, v);
                         } else {
                             // metamethod
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(t.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
                             std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
@@ -986,7 +1008,7 @@ void VM::run() {
                 case OpCode::NEWTABLE: {
                     int a = GETARG_A(i); /* args are 'A B C k' */
                     /* B, C, k are unused for now */
-                    stack[frame->stack_base + a] = LuaValue(new LuaTable(), LuaType::TABLE);
+                    *stack[frame->stack_base + a] = LuaValue(std::make_shared<LuaTable>(), LuaType::TABLE);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -995,21 +1017,21 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
                     
-                    LuaValue self = stack[frame->stack_base + b];
-                    LuaValue method_key = stack[frame->stack_base + c];
+                    LuaValue& self = *stack[frame->stack_base + b];
+                    LuaValue& method_key = *stack[frame->stack_base + c];
                     
                     // R[A+1] := R[B] (self)
-                    stack[frame->stack_base + a + 1] = self;
+                    *stack[frame->stack_base + a + 1] = self;
                     
                     // R[A] := R[B][RK(C):string] (method)
                     if (self.getType() == LuaType::TABLE) {
-                        if (auto* table = dynamic_cast<LuaTable*>(self.getObject())) {
-                            stack[frame->stack_base + a] = table->get(method_key);
+                        if (auto table = std::dynamic_pointer_cast<LuaTable>(self.getObject())) {
+                            *stack[frame->stack_base + a] = table->get(method_key);
                         } else {
                             // metamethod handling would go here
                         }
                     } else {
-                        if (auto* gc = dynamic_cast<LuaGCObject*>(self.getObject())) {
+                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(self.getObject())) {
                             // metamethod handling would go here
                         } else {
                             std::cerr << "Attempt to index a " << self.typeName() << " value" << std::endl;
@@ -1022,10 +1044,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue imm(std::make_shared<LuaInteger>(sc), LuaType::NUMBER);
 
-                    stack[frame->stack_base + a] = add(rb, imm);
+                    *stack[frame->stack_base + a] = add(rb, imm);
 
                     top = frame->stack_base + a + 1;
                     break;
@@ -1034,10 +1056,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                                 
-                    stack[frame->stack_base + a] = add(rb, kc);
+                    *stack[frame->stack_base + a] = add(rb, kc);
                                 
                     top = frame->stack_base + a + 1;
                     break;
@@ -1046,10 +1068,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = sub(rb, kc);
+                    *stack[frame->stack_base + a] = sub(rb, kc);
                     
                     top = frame->stack_base + a + 1;
                     break;
@@ -1058,10 +1080,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = mul(rb, kc);
+                    *stack[frame->stack_base + a] = mul(rb, kc);
 
                     top = frame->stack_base + a + 1;
                     break;
@@ -1070,10 +1092,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = mod(rb, kc);
+                    *stack[frame->stack_base + a] = mod(rb, kc);
                     
                     top = frame->stack_base + a + 1;
                     break;
@@ -1082,10 +1104,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = pow(rb, kc);
+                    *stack[frame->stack_base + a] = pow(rb, kc);
 
                     top = frame->stack_base + a + 1;
                     break;
@@ -1094,10 +1116,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = div(rb, kc);
+                    *stack[frame->stack_base + a] = div(rb, kc);
 
                     top = frame->stack_base + a + 1;
                     break;
@@ -1106,10 +1128,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = idiv(rb, kc);
+                    *stack[frame->stack_base + a] = idiv(rb, kc);
                     
                     top = frame->stack_base + a + 1;
                     break;
@@ -1118,9 +1140,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = add(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = add(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1128,9 +1150,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = sub(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = sub(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1138,9 +1160,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = mul(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = mul(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1148,9 +1170,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = div(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = div(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1158,9 +1180,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = mod(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = mod(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1168,9 +1190,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = pow(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = pow(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1178,9 +1200,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = idiv(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = idiv(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1188,9 +1210,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = band(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = band(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1198,9 +1220,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = bor(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = bor(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1208,9 +1230,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = bxor(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = bxor(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1218,9 +1240,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = shl(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = shl(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1228,9 +1250,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue rc = stack[frame->stack_base + c];
-                    stack[frame->stack_base + a] = shr(rb, rc);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue rc = *stack[frame->stack_base + c];
+                    *stack[frame->stack_base + a] = shr(rb, rc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1238,10 +1260,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = band(rb, kc);
+                    *stack[frame->stack_base + a] = band(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1249,10 +1271,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = bor(rb, kc);
+                    *stack[frame->stack_base + a] = bor(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1260,10 +1282,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     LuaValue kc = func->getConstants()[c];
                     
-                    stack[frame->stack_base + a] = bxor(rb, kc);
+                   * stack[frame->stack_base + a] = bxor(rb, kc);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1271,10 +1293,10 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue imm(std::make_shared<LuaInteger>(sc), LuaType::NUMBER);
                     
-                    stack[frame->stack_base + a] = shr(rb, imm);
+                    *stack[frame->stack_base + a] = shr(rb, imm);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1282,41 +1304,41 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int sc = GETARG_sC(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    LuaValue imm(new LuaInteger(sc), LuaType::NUMBER);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    LuaValue imm(std::make_shared<LuaInteger>(sc), LuaType::NUMBER);
                     
-                    stack[frame->stack_base + a] = shl(rb, imm);
+                   * stack[frame->stack_base + a] = shl(rb, imm);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::UNM: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    stack[frame->stack_base + a] = unm(rb);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    *stack[frame->stack_base + a] = unm(rb);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::BNOT: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    stack[frame->stack_base + a] = bnot(rb);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    *stack[frame->stack_base + a] = bnot(rb);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::NOT: {
                     int a = GETARG_A(i); /* args are 'A B' */
                     int b = GETARG_B(i);
-                    stack[frame->stack_base + a] = LuaValue(as_bool(stack[frame->stack_base + b]) ? FALSE_OBJ : TRUE_OBJ, LuaType::BOOLEAN);
+                    *stack[frame->stack_base + a] = LuaValue(as_bool(*stack[frame->stack_base + b]) ? FALSE_OBJ : TRUE_OBJ, LuaType::BOOLEAN);
                     top = frame->stack_base + a + 1;
                     break;
                 }
                 case OpCode::LEN: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
-                    LuaValue rb = stack[frame->stack_base + b];
-                    stack[frame->stack_base + a] = len(rb);
+                    LuaValue rb = *stack[frame->stack_base + b];
+                    *stack[frame->stack_base + a] = len(rb);
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1325,13 +1347,13 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
                     if (b > c) {
-                        stack[frame->stack_base + a] = LuaValue(new LuaString(""), LuaType::STRING);
+                        *stack[frame->stack_base + a] = LuaValue(std::make_shared<LuaString>(""), LuaType::STRING);
                     } else {
-                        LuaValue result = stack[frame->stack_base + b];
+                        LuaValue& result = *stack[frame->stack_base + b];
                         for (int j = b + 1; j <= c; j++) {
-                            result = concat(result, stack[frame->stack_base + j]);
+                            result = concat(result, *stack[frame->stack_base + j]);
                         }
-                        stack[frame->stack_base + a] = result;
+                        *stack[frame->stack_base + a] = result;
                     }
                     top = frame->stack_base + a + 1;
                     break;
@@ -1356,8 +1378,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     
                     bool result = eq(ra, rb);
                     if (k == 0) result = !result;
@@ -1368,8 +1390,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     
                     bool result = lt(ra, rb);
                     if (k == 0) result = !result;
@@ -1380,8 +1402,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue rb = *stack[frame->stack_base + b];
                     
                     bool result = le(ra, rb);
                     if (k == 0) result = !result;
@@ -1392,7 +1414,7 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
+                    LuaValue ra = *stack[frame->stack_base + a];
                     LuaValue kb = func->getConstants()[b];
                     
                     bool result = eq(ra, kb);
@@ -1404,8 +1426,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue ib(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue ib(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                     
                     bool result = eq(ra, ib);
                     if (k == 0) result = !result;
@@ -1416,8 +1438,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue ib(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue ib(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                     
                     bool result = lt(ra, ib);
                     if (k == 0) result = !result;
@@ -1428,8 +1450,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue ib(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue ib(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                     
                     bool result = le(ra, ib);
                     if (k == 0) result = !result;
@@ -1440,8 +1462,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue ib(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue ib(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                     
                     bool result = lt(ib, ra); // a > b is equivalent to b < a
                     if (k == 0) result = !result;
@@ -1452,8 +1474,8 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int sb = GETARG_sB(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
-                    LuaValue ib(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue ra = *stack[frame->stack_base + a];
+                    LuaValue ib(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                     
                     bool result = le(ib, ra); // a >= b is equivalent to b <= a
                     if (k == 0) result = !result;
@@ -1463,7 +1485,7 @@ void VM::run() {
                 case OpCode::TEST: {
                     int a = GETARG_A(i);
                     int k = GETARG_C(i);
-                    LuaValue ra = stack[frame->stack_base + a];
+                    LuaValue ra = *stack[frame->stack_base + a];
                     
                     bool result = as_bool(ra);
                     if (k == 0) result = !result;
@@ -1474,12 +1496,12 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int k = GETARG_C(i);
-                    LuaValue rb = stack[frame->stack_base + b];
+                    LuaValue& rb = *stack[frame->stack_base + b];
                     
                     bool result = as_bool(rb);
                     if (k == 0) result = !result;
                     if (result) {
-                        stack[frame->stack_base + a] = rb;
+                        *stack[frame->stack_base + a] = rb;
                     } else {
                         pc++;
                     }
@@ -1494,7 +1516,7 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue func_val = stack[frame->stack_base + a];
+                    LuaValue& func_val = *stack[frame->stack_base + a];
 
                     int num_args = (b == 0) ? (top - (frame->stack_base + a + 1)) : (b - 1);
                     int num_results = (c == 0) ? -1 : (c - 1);
@@ -1509,21 +1531,21 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                    LuaValue func_val = stack[frame->stack_base + a];
+                    LuaValue& func_val = *stack[frame->stack_base + a];
                     
                     if (func_val.getType() == LuaType::FUNCTION) {
-                        if (auto* closure = dynamic_cast<LuaClosure*>(func_val.getObject())) {
+                        if (auto closure_ptr = std::dynamic_pointer_cast<LuaClosure>(func_val.getObject())) {
                             // For tail call, we replace the current frame instead of adding a new one
-                            frame->closure = closure;
-                            frame->pc = &closure->getFunction()->getBytecode()[0];
+                            frame->closure = closure_ptr;
+                            frame->pc = &closure_ptr->getFunction()->getBytecode()[0];
                             frame->stack_base = frame->stack_base + a; // Adjust stack base
                             break;
                         }
                         // native cfunction support for tail call
-                        if (auto* cfunc = dynamic_cast<LuaNativeFunction*>(func_val.getObject())) {
+                        if (auto cfunc_ptr = std::dynamic_pointer_cast<LuaNativeFunction>(func_val.getObject())) {
                             int num_args = b > 0 ? b - 1 : 0;
                             int base_reg = frame->stack_base + a + 1;
-                            int nret = cfunc->call(*this, base_reg, num_args);
+                            int nret = cfunc_ptr->call(*this, base_reg, num_args);
                             // For tail call, we return directly
                             call_stack.pop_back();
                             break;
@@ -1547,7 +1569,7 @@ void VM::run() {
                     // Close open upvalues if necessary
                     if (op != OpCode::RETURN0) {
                         for (auto& upval : frame->closure->getUpvalues()) {
-                            if (upval->getLocation() >= &stack[frame->stack_base + a]) {
+                            if (upval->isOpen() && !upval->getLocation().expired()) {
                                 upval->close();
                             }
                         }
@@ -1576,17 +1598,17 @@ void VM::run() {
                     int bx = GETARG_Bx(i);
                     
                     // R[A] += R[A+2]
-                    LuaValue step = stack[frame->stack_base + a + 2];
-                    LuaValue index = stack[frame->stack_base + a];
+                    LuaValue step = *stack[frame->stack_base + a + 2];
+                    LuaValue index = *stack[frame->stack_base + a];
                     
                     if (index.getType() == LuaType::NUMBER && step.getType() == LuaType::NUMBER) {
                         luaNumber idx = get_number_from_value(index);
                         luaNumber stp = get_number_from_value(step);
                         luaNumber new_idx = idx + stp;
-                        stack[frame->stack_base + a] = LuaValue(new LuaNumber(new_idx), LuaType::NUMBER);
+                        *stack[frame->stack_base + a] = LuaValue(std::make_shared<LuaNumber>(new_idx), LuaType::NUMBER);
                         
                         // Check if loop should continue
-                        LuaValue limit = stack[frame->stack_base + a + 1];
+                        LuaValue limit = *stack[frame->stack_base + a + 1];
                         if (limit.getType() == LuaType::NUMBER) {
                             luaNumber lim = get_number_from_value(limit);
                             if ((stp > 0 && new_idx <= lim) || (stp < 0 && new_idx >= lim)) {
@@ -1601,9 +1623,9 @@ void VM::run() {
                     int bx = GETARG_Bx(i);
                     
                     // Check values and prepare counters
-                    LuaValue init = stack[frame->stack_base + a];
-                    LuaValue limit = stack[frame->stack_base + a + 1];
-                    LuaValue step = stack[frame->stack_base + a + 2];
+                    LuaValue init = *stack[frame->stack_base + a];
+                    LuaValue limit = *stack[frame->stack_base + a + 1];
+                    LuaValue step = *stack[frame->stack_base + a + 2];
                     
                     if (init.getType() == LuaType::NUMBER && 
                         limit.getType() == LuaType::NUMBER && 
@@ -1636,30 +1658,34 @@ void VM::run() {
                     int bx = GETARG_Bx(i);
                     LuaValue proto_val = func->getProtos()[bx];
                     if (proto_val.getType() == LuaType::FUNCTION) {
-                        auto* proto = dynamic_cast<LuaFunction*>(proto_val.getObject());
-                        LuaClosure* new_closure = new LuaClosure(proto);
+                        auto proto = std::dynamic_pointer_cast<LuaFunction>(proto_val.getObject());
+                        std::shared_ptr<LuaClosure> new_closure = std::make_shared<LuaClosure>(proto);
                         setup_closure(new_closure, *this);
                         // initialize captured upvalues
                         const auto& updescs = proto->getUpvalDescs();
                         auto& new_upvals = new_closure->getUpvalues();
                         new_upvals.reserve(updescs.size());
                         for (const auto& desc : updescs) {
-                            UpValue* uv = nullptr;
+                            std::shared_ptr<UpValue> uv = nullptr;
                             if (desc.inStack) {
-                                LuaValue* loc = &stack[frame->stack_base + desc.idx];
-                                uv = new UpValue(loc);
+                                auto loc = std::make_shared<LuaValue>(stack[frame->stack_base + desc.idx]);
+                                uv = std::make_shared<UpValue>(loc);
                             } else {
                                 auto& outer = frame->closure->getUpvalues();
-                                if (desc.idx < 0 || desc.idx >= static_cast<int>(outer.size())) {
+                                if (desc.idx < 0 || desc.idx >= static_cast<int>(outer.size()))
                                     throw std::runtime_error("Invalid upvalue index in CLOSURE");
+
+                                auto outer_uv = outer[desc.idx];
+                                if (outer_uv->isOpen()) {
+                                    uv = std::make_shared<UpValue>(outer_uv->getLocation().lock());
+                                } else {
+                                    uv = std::make_shared<UpValue>(std::make_shared<LuaValue>(outer_uv->getValue()));
+                                    uv->close();
                                 }
-                                LuaValue* loc = outer[desc.idx]->getLocation();
-                                uv = new UpValue(loc);
                             }
-                            uv->retain();
                             new_upvals.push_back(uv);
                         }
-                        stack[frame->stack_base + a] = LuaValue(new_closure, LuaType::FUNCTION);
+                        *stack[frame->stack_base + a] = LuaValue(new_closure, LuaType::FUNCTION);
                     } else {
                         throw std::runtime_error("Attempt to create closure from non-function(proto) value");
                     }
@@ -1672,7 +1698,7 @@ void VM::run() {
                     if (b < 0 || b >= static_cast<int>(upvals.size())) {
                         throw std::runtime_error("GETUPVAL: invalid upvalue index");
                     }
-                    stack[frame->stack_base + a] = upvals[b]->getValue();
+                    stack[frame->stack_base + a] = upvals[b]->getLocation().lock();
                     top = frame->stack_base + a + 1;
                     break;
                 }
@@ -1683,7 +1709,7 @@ void VM::run() {
                     if (b < 0 || b >= static_cast<int>(upvals.size())) {
                         throw std::runtime_error("SETUPVAL: invalid upvalue index");
                     }
-                    upvals[b]->setValue(stack[frame->stack_base + a]);
+                    upvals[b]->setValue(*stack[frame->stack_base + a]);
                     break;
                 }
                 case OpCode::MMBIN: {
@@ -1692,8 +1718,8 @@ void VM::run() {
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
                                 
-                    LuaValue va = stack[frame->stack_base + a];
-                    LuaValue vb = stack[frame->stack_base + b];
+                    LuaValue va = *stack[frame->stack_base + a];
+                    LuaValue vb = *stack[frame->stack_base + b];
                                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
                         std::cerr << "metamethod not found for MMBIN" << std::endl;
@@ -1709,8 +1735,8 @@ void VM::run() {
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
                 
-                    LuaValue va = stack[frame->stack_base + a];
-                    LuaValue vb(new LuaInteger(sb), LuaType::NUMBER);
+                    LuaValue va = *stack[frame->stack_base + a];
+                    LuaValue vb(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
                         std::cerr << "metamethod not found for MMBINI" << std::endl;
@@ -1726,7 +1752,7 @@ void VM::run() {
                     int c = GETARG_C(i);
                     const LuaValue& key = mm_key_from_C(c);
                 
-                    LuaValue va = stack[frame->stack_base + a];
+                    LuaValue va = *stack[frame->stack_base + a];
                     LuaValue vb = func->getConstants()[b];
                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
@@ -1749,16 +1775,16 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int c = GETARG_C(i);
                     // R[A+4], ... ,R[A+3+C] := R[A](R[A+1], R[A+2])
-                    LuaValue iterator = stack[frame->stack_base + a];
-                    LuaValue state = stack[frame->stack_base + a + 1];
-                    LuaValue control = stack[frame->stack_base + a + 2];
+                    LuaValue iterator = *stack[frame->stack_base + a];
+                    LuaValue state = *stack[frame->stack_base + a + 1];
+                    LuaValue control = *stack[frame->stack_base + a + 2];
                     
                     if (iterator.getType() == LuaType::FUNCTION) {
                         // Call the iterator function
                         // This is a simplified implementation
                         // In a full implementation, we would call the iterator and store results
                         for (int j = 0; j < c; j++) {
-                            stack[frame->stack_base + a + 4 + j] = LuaValue(); // nil for now
+                            *stack[frame->stack_base + a + 4 + j] = LuaValue(); // nil for now
                         }
                     }
                     break;
@@ -1767,9 +1793,9 @@ void VM::run() {
                     int a = GETARG_A(i);
                     int bx = GETARG_Bx(i);
                     // if R[A+2] ~= nil then { R[A]=R[A+2]; pc -= Bx }
-                    LuaValue control = stack[frame->stack_base + a + 2];
+                    LuaValue& control = *stack[frame->stack_base + a + 2];
                     if (control.getType() != LuaType::NIL) {
-                        stack[frame->stack_base + a] = control;
+                        *stack[frame->stack_base + a] = control;
                         pc -= bx;
                     }
                     break;
@@ -1779,11 +1805,11 @@ void VM::run() {
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
                     // R[A][C+i] := R[A+i], 1 <= i <= B
-                    LuaValue table = stack[frame->stack_base + a];
+                    LuaValue table = *stack[frame->stack_base + a];
                     if (table.getType() == LuaType::TABLE) {
-                        if (auto* tbl = dynamic_cast<LuaTable*>(table.getObject())) {
+                        if (auto tbl = std::dynamic_pointer_cast<LuaTable>(table.getObject())) {
                             for (int j = 1; j <= b; j++) {
-                                LuaValue value = stack[frame->stack_base + a + j];
+                                LuaValue value = *stack[frame->stack_base + a + j];
                                 tbl->set(c + j, value);
                             }
                         }
@@ -1795,16 +1821,16 @@ void VM::run() {
                     int c = GETARG_C(i);
                     // R[A], R[A+1], ..., R[A+C-2] = vararg
                     // Get vararg values from the function's vararg list
-                    LuaFunction* func = frame->closure->getFunction();
+                    std::shared_ptr<LuaFunction> func = frame->closure->getFunction();
                     const auto& varargs = func->getVarargs();
                     int num_vars = std::min(c - 1, static_cast<int>(varargs.size()));
                     
                     for (int j = 0; j < num_vars; j++) {
-                        stack[frame->stack_base + a + j] = varargs[j];
+                        *stack[frame->stack_base + a + j] = varargs[j];
                     }
                     // Fill remaining with nil if needed
                     for (int j = num_vars; j < c - 1; j++) {
-                        stack[frame->stack_base + a + j] = LuaValue(); // nil
+                        *stack[frame->stack_base + a + j] = LuaValue(); // nil
                     }
                     top = frame->stack_base + a + c - 1;
                     break;

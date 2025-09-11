@@ -7,6 +7,7 @@
 #include <function.hpp>
 #include <closure.hpp>
 #include <table.hpp>
+#include <memory>
 
 using namespace luao;
 
@@ -28,9 +29,9 @@ void test_cfunction_call() {
     UpvalDesc _ENV; _ENV.name = "_ENV"; _ENV.inStack = true; _ENV.idx = 0;
 
     // C関数: 引数0個、"hello"を返す
-    LuaNativeFunction* cprint = new LuaNativeFunction([](VM& vm, int base_reg, int num_args) -> int {
+    std::shared_ptr<LuaNativeFunction> cprint = std::make_shared<LuaNativeFunction>([](VM& vm, int base_reg, int num_args) -> int {
         auto& st = vm.get_stack_mutable();
-        st[base_reg] = LuaValue(new LuaString("hello"), LuaType::STRING);
+        *st[base_reg] = LuaValue(std::make_shared<LuaString>("hello"), LuaType::STRING);
         return 1; // 戻り値1個
     });
 
@@ -46,29 +47,29 @@ void test_cfunction_call() {
         LuaValue(cprint, LuaType::FUNCTION)
     };
 
-    LuaFunction* main_func = new LuaFunction(bytecode, constants, {}, {_ENV});
-    LuaClosure* main_closure = new LuaClosure(main_func);
+    std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode, constants, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV}, std::vector<LocalVarinfo>{});
+    std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
     VM vm;
     vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     auto result = vm.get_stack_mutable()[0];
-    assert(result.getType() == LuaType::STRING);
-    std::cout << "Result: " << result.getObject()->toString() << std::endl;
+    assert(result.get()->getType() == LuaType::STRING);
+    std::cout << "Result: " << result.get()->getObject()->toString() << std::endl;
 }
 
 void test_metamethod() {
     std::cout << "--- Testing Metamethod ---" << std::endl;
     UpvalDesc _ENV; _ENV.name = "_ENV"; _ENV.inStack = true; _ENV.idx = 0;
 
-    LuaNativeFunction* __add = new LuaNativeFunction([](VM& vm, int base_reg, int num_args) -> int {
+    std::shared_ptr<LuaNativeFunction> __add = std::make_shared<LuaNativeFunction>([](VM& vm, int base_reg, int num_args) -> int {
         auto& stack = vm.get_stack_mutable();
-        stack[base_reg] = LuaValue(new LuaInteger(10), LuaType::NUMBER);
+        *stack[base_reg] = LuaValue(std::make_shared<LuaInteger>(10), LuaType::NUMBER);
         return 1;
     });
 
-    LuaTable* a = new LuaTable(); 
-    LuaTable* a_mt = new LuaTable();
+    std::shared_ptr<LuaTable> a = std::make_shared<LuaTable>(); 
+    std::shared_ptr<LuaTable> a_mt = std::make_shared<LuaTable>();
     a_mt->set(mm::__add, LuaValue(__add, LuaType::FUNCTION));
     a->setMetatable(a_mt);
 
@@ -82,16 +83,16 @@ void test_metamethod() {
         LuaValue(a, LuaType::TABLE)
     };
 
-    LuaFunction* main_func = new LuaFunction(bytecode, constants, {}, {_ENV});
-    LuaClosure* main_closure = new LuaClosure(main_func);
+    std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode, constants, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV}, std::vector<LocalVarinfo>{});
+    std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
     VM vm;
     vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
     auto result = vm.get_stack_mutable()[0];
-    assert(result.getType() == LuaType::NUMBER
-        && dynamic_cast<LuaInteger*>(result.getObject())->getValue() == 10);
-    std::cout << "Result: " << result.getObject()->toString() << std::endl;
+    assert(result.get()->getType() == LuaType::NUMBER
+        && std::dynamic_pointer_cast<LuaInteger>(result.get()->getObject())->getValue() == 10);
+    std::cout << "Result: " << result.get()->getObject()->toString() << std::endl;
 }
 
 void test_stack_overflow() {
@@ -100,40 +101,76 @@ void test_stack_overflow() {
     UpvalDesc _ENV_f; _ENV_f.name = "_ENV"; _ENV_f.inStack = false; _ENV_f.idx = 0;
 
     std::vector<Instruction> bytecode_f = {
-        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0),
-        CREATE_ABC(OpCode::CALL, 0, 1, 1),
-        static_cast<Instruction>(OpCode::RETURN0)
+        CREATE_ABC(OpCode::GETTABUP, 10, 0, 0), // 1: R10 = _ENV["func"]
+        CREATE_ABC(OpCode::MOVE, 11, 0, 0),     // 2: MOVE R11 = R0
+        CREATE_ABC(OpCode::MOVE, 12, 1, 0),     // 3: MOVE R12 = R1
+        CREATE_ABC(OpCode::MOVE, 13, 2, 0),     // 4: MOVE R13 = R2
+        CREATE_ABC(OpCode::MOVE, 14, 3, 0),     // 5
+        CREATE_ABC(OpCode::MOVE, 15, 4, 0),     // 6
+        CREATE_ABC(OpCode::MOVE, 16, 5, 0),     // 7
+        CREATE_ABC(OpCode::MOVE, 17, 6, 0),     // 8
+        CREATE_ABC(OpCode::MOVE, 18, 7, 0),     // 9
+        CREATE_ABC(OpCode::MOVE, 19, 8, 0),     // 10
+        CREATE_ABC(OpCode::MOVE, 20, 9, 0),     // 11
+        CREATE_ABC(OpCode::CALL, 10, 11, 1),    // 12: 再帰呼び出し
+        CREATE_A(OpCode::RETURN0, 0)            // 13: RETURN0
     };
 
     
     std::vector<LuaValue> constants_f = {
-        LuaValue(new LuaString("func"), LuaType::STRING)
+        LuaValue(std::make_shared<LuaString>("func"), LuaType::STRING)
     };
 
 
-    LuaFunction* func = new LuaFunction(bytecode_f, constants_f, {}, {_ENV_f});
+    std::shared_ptr<LuaFunction> func = std::make_shared<LuaFunction>(bytecode_f, constants_f, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV_f}, std::vector<LocalVarinfo>{});
 
     std::vector<Instruction> bytecode = {
-        CREATE_ABx(OpCode::CLOSURE, 0, 0),
-        CREATE_ABC(OpCode::SETTABUP, 0, 0, 0),
-        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0),
-        CREATE_ABC(OpCode::CALL, 0, 1, 1),
-        CREATE_ABC(OpCode::RETURN, 0, 1, 1)
+        CREATE_ABx(OpCode::CLOSURE, 0, 0),     // 2: CLOSURE func
+        CREATE_ABC(OpCode::SETTABUP, 0, 0, 0), // 3: _ENV["func"] = func
+        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0), // 4: R0 = _ENV["func"]
+        CREATE_ABC(OpCode::LOADI, 1, 1, 0),    // 5: R1 = 1
+        CREATE_ABC(OpCode::LOADI, 2, 2, 0),    // 6: R2 = 2
+        CREATE_ABC(OpCode::LOADI, 3, 3, 0),    // 7: R3 = 3
+        CREATE_ABC(OpCode::LOADI, 4, 4, 0),    // 8: R4 = 4
+        CREATE_ABC(OpCode::LOADI, 5, 5, 0),    // 9: R5 = 5
+        CREATE_ABC(OpCode::LOADI, 6, 6, 0),    // 10: R6 = 6
+        CREATE_ABC(OpCode::LOADI, 7, 7, 0),    // 11: R7 = 7
+        CREATE_ABC(OpCode::LOADI, 8, 8, 0),    // 12: R8 = 8
+        CREATE_ABC(OpCode::LOADI, 9, 9, 0),    // 13: R9 = 9
+        CREATE_ABC(OpCode::LOADI, 10, 10, 0),  // 14: R10 = 10
+        CREATE_ABC(OpCode::CALL, 0, 11, 1),    // 15: CALL func with 10 args
+        CREATE_A(OpCode::RETURN1, 0)           // 16: RETURN
     };
 
     std::vector<LuaValue> constants = {
-        LuaValue(new LuaString("func"), LuaType::STRING)
+        LuaValue(std::make_shared<LuaString>("func"), LuaType::STRING)
     };
 
     std::vector<LuaValue> protos = {
         LuaValue(func, LuaType::FUNCTION)
     };
 
-    LuaFunction* main_func = new LuaFunction(bytecode, constants, protos, {_ENV});
-    LuaClosure* main_closure = new LuaClosure(main_func);
+    std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode,
+        constants,
+        protos,
+        std::vector<UpvalDesc>{_ENV},
+        std::vector<LocalVarinfo>{
+            LocalVarinfo("a", 1, 14),
+            LocalVarinfo("b", 1, 14),
+            LocalVarinfo("c", 1, 14),
+            LocalVarinfo("d", 1, 14),
+            LocalVarinfo("e", 1, 14),
+            LocalVarinfo("f", 1, 14),
+            LocalVarinfo("g", 1, 14),
+            LocalVarinfo("h", 1, 14),
+            LocalVarinfo("i", 1, 14),
+            LocalVarinfo("j", 1, 14),
+        }
+    );
+    std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
     VM vm;
     vm.load(main_closure);
-    vm.set_trace(true);
+    vm.set_trace(false);
     vm.run();
 }
 

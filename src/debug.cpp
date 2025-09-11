@@ -13,7 +13,7 @@ namespace luao {
 #define GETARG_Bx(i)    ((i) >> 15)
 #define GETARG_sBx(i)   (static_cast<int>(GETARG_Bx(i)) - 65535)
 
-std::string disassemble_instruction(Instruction i, const LuaFunction* func) {
+std::string disassemble_instruction(Instruction i, const std::shared_ptr<LuaFunction> func) {
     std::stringstream ss;
     OpCode op = GET_OPCODE(i);
     ss << to_string(op) << " ";
