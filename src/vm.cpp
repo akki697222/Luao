@@ -740,6 +740,11 @@ void VM::run() {
             }
             OpCode op = GET_OPCODE(i);
 
+            std::cout << "PC=" << *pc
+                      << " OPCODE=" << static_cast<int>(op)
+                      << " STACK_TOP=" << top
+                      << std::endl;
+
             switch (op) {
                 case OpCode::MOVE: {
                     int a = GETARG_A(i); /* args are 'A B' */
@@ -1828,6 +1833,11 @@ void VM::run() {
                     std::cout << "Unknown opcode: " << to_string(op) << std::endl;
                     return;
                 }
+            }
+            // If we are here, it means we have returned from a function or called one.
+            // so break from the inner loop to get the new frame.
+            if (op == OpCode::CALL || op == OpCode::TAILCALL || op == OpCode::RETURN || op == OpCode::RETURN0 || op == OpCode::RETURN1) {
+                break;
             }
         }
     }

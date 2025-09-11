@@ -52,9 +52,9 @@ void test_cfunction_call() {
     vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
-    auto top = vm.get_stack_top();
-    assert(top.getType() == LuaType::STRING);
-    std::cout << "Result: " << top.getObject()->toString() << std::endl;
+    auto result = vm.get_stack_mutable()[0];
+    assert(result.getType() == LuaType::STRING);
+    std::cout << "Result: " << result.getObject()->toString() << std::endl;
 }
 
 int main(int argc, char **argv)
