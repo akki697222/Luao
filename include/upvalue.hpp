@@ -1,14 +1,15 @@
 #pragma once
 
 #include <object.hpp>
+#include <memory>
 
 namespace luao {
 
-class UpValue : public LuaGCObject {
+class UpValue : public LuaObject {
 public:
-    explicit UpValue(LuaValue* location) : location_(location) {}
+    explicit UpValue(std::shared_ptr<LuaValue> location) : location_(location) {}
 
-    LuaValue* getLocation() const {
+    std::shared_ptr<LuaValue> getLocation() const {
         return location_;
     }
 
@@ -21,15 +22,15 @@ public:
     }
 
     void close() {
-        closed_ = *location_;
-        location_ = &closed_;
+        closed_ = *location_.get();
+        location_ = std::make_shared<LuaValue>(closed_);
     }
     
     LuaType getType() const override { return LuaType::USERDATA; }
     std::string typeName() const override { return "upvalue"; }
 
 private:
-    LuaValue* location_;
+    std::shared_ptr<LuaValue> location_;
     LuaValue closed_;
 };
 

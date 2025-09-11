@@ -7,75 +7,44 @@
 #include <cmath>
 #include <cstring>
 #include <opcodes.hpp>
+#include <config.hpp>
+#include <upvalue.hpp>
+#include <memory>
 
-// metamethod key shortcuts
 namespace mm {
-    static const luao::LuaValue __add       = luao::LuaValue(new luao::LuaString("__add"),       LuaType::STRING);
-    static const luao::LuaValue __sub       = luao::LuaValue(new luao::LuaString("__sub"),       LuaType::STRING);
-    static const luao::LuaValue __mul       = luao::LuaValue(new luao::LuaString("__mul"),       LuaType::STRING);
-    static const luao::LuaValue __div       = luao::LuaValue(new luao::LuaString("__div"),       LuaType::STRING);
-    static const luao::LuaValue __unm       = luao::LuaValue(new luao::LuaString("__unm"),       LuaType::STRING);
-    static const luao::LuaValue __mod       = luao::LuaValue(new luao::LuaString("__mod"),       LuaType::STRING);
-    static const luao::LuaValue __pow       = luao::LuaValue(new luao::LuaString("__pow"),       LuaType::STRING);
-    static const luao::LuaValue __idiv       = luao::LuaValue(new luao::LuaString("__idiv"),     LuaType::STRING);
-    static const luao::LuaValue __band      = luao::LuaValue(new luao::LuaString("__band"),      LuaType::STRING);
-    static const luao::LuaValue __bor       = luao::LuaValue(new luao::LuaString("__bor"),       LuaType::STRING);
-    static const luao::LuaValue __bxor      = luao::LuaValue(new luao::LuaString("__bxor"),      LuaType::STRING);
-    static const luao::LuaValue __bnot      = luao::LuaValue(new luao::LuaString("__bnot"),      LuaType::STRING);
-    static const luao::LuaValue __shl       = luao::LuaValue(new luao::LuaString("__shl"),       LuaType::STRING);
-    static const luao::LuaValue __shr       = luao::LuaValue(new luao::LuaString("__shr"),       LuaType::STRING);
-    static const luao::LuaValue __eq        = luao::LuaValue(new luao::LuaString("__eq"),        LuaType::STRING);
-    static const luao::LuaValue __lt        = luao::LuaValue(new luao::LuaString("__lt"),        LuaType::STRING);
-    static const luao::LuaValue __le        = luao::LuaValue(new luao::LuaString("__le"),        LuaType::STRING);
-    static const luao::LuaValue __concat    = luao::LuaValue(new luao::LuaString("__concat"),    LuaType::STRING);
-    static const luao::LuaValue __len       = luao::LuaValue(new luao::LuaString("__len"),       LuaType::STRING);
-    static const luao::LuaValue __tostring  = luao::LuaValue(new luao::LuaString("__tostring"),  LuaType::STRING);
-    static const luao::LuaValue __metatable = luao::LuaValue(new luao::LuaString("__metatable"), LuaType::STRING);
-    static const luao::LuaValue __name      = luao::LuaValue(new luao::LuaString("__name"),      LuaType::STRING);
-    static const luao::LuaValue __pairs     = luao::LuaValue(new luao::LuaString("__pairs"),     LuaType::STRING);
-    static const luao::LuaValue __ipairs    = luao::LuaValue(new luao::LuaString("__ipairs"),    LuaType::STRING); /* deprecated */
-    static const luao::LuaValue __index     = luao::LuaValue(new luao::LuaString("__index"),     LuaType::STRING);
-    static const luao::LuaValue __newindex  = luao::LuaValue(new luao::LuaString("__newindex"),  LuaType::STRING);
-    static const luao::LuaValue __call      = luao::LuaValue(new luao::LuaString("__call"),      LuaType::STRING);
-    static const luao::LuaValue __mode      = luao::LuaValue(new luao::LuaString("__mode"),      LuaType::STRING);
-    static const luao::LuaValue __close     = luao::LuaValue(new luao::LuaString("__close"),     LuaType::STRING);
-    static const luao::LuaValue __gc        = luao::LuaValue(new luao::LuaString("__gc"),        LuaType::STRING);
-    // luao extension (implement later, definition only)
-    /* 
-        # 
-        # '__iterator' metamethod
-        #
-        returns are iterator function (used by for-each-do statements)
-        the return value of the function returned by __iterator is arbitrary, and the return value is directly assigned to the argument of for.
-        example:
-        local arr = {1, 2, 3}
-        local mt = {
-            __iterator = function(self, t)
-                local i = 0
-                return function()
-                    i = i + 1
-                    return t[i]
-                end
-            end
-        }
-        setmetatable(arr, mt)
-        -- for ... each value trying calls value's __iterator, __pairs, __ipairs metamethod.
-        for v each arr do
-            print(v)
-        end
-        
-        outputs are '1' '2' '3'
-    */
-    static const luao::LuaValue __iterator = luao::LuaValue(new luao::LuaString("__iterator"), LuaType::STRING);
-    /*
-        #
-        # '__newinstance' metamethod
-        #
-        This metamethod only applies to class.
-        When a class is instantiated, the VM first calls the class's $init method and finally calls the __newinstance metamethod.
-
-    */
-    static const luao::LuaValue __newinstance = luao::LuaValue(new luao::LuaString("__newinstance"), LuaType::STRING);
+    luao::LuaValue __add         = luao::LuaValue(std::make_shared<luao::LuaString>("__add"),         LuaType::STRING);
+    luao::LuaValue __sub         = luao::LuaValue(std::make_shared<luao::LuaString>("__sub"),         LuaType::STRING);
+    luao::LuaValue __mul         = luao::LuaValue(std::make_shared<luao::LuaString>("__mul"),         LuaType::STRING);
+    luao::LuaValue __div         = luao::LuaValue(std::make_shared<luao::LuaString>("__div"),         LuaType::STRING);
+    luao::LuaValue __unm         = luao::LuaValue(std::make_shared<luao::LuaString>("__unm"),         LuaType::STRING);
+    luao::LuaValue __mod         = luao::LuaValue(std::make_shared<luao::LuaString>("__mod"),         LuaType::STRING);
+    luao::LuaValue __pow         = luao::LuaValue(std::make_shared<luao::LuaString>("__pow"),         LuaType::STRING);
+    luao::LuaValue __idiv        = luao::LuaValue(std::make_shared<luao::LuaString>("__idiv"),        LuaType::STRING);
+    luao::LuaValue __band        = luao::LuaValue(std::make_shared<luao::LuaString>("__band"),        LuaType::STRING);
+    luao::LuaValue __bor         = luao::LuaValue(std::make_shared<luao::LuaString>("__bor"),         LuaType::STRING);
+    luao::LuaValue __bxor        = luao::LuaValue(std::make_shared<luao::LuaString>("__bxor"),        LuaType::STRING);
+    luao::LuaValue __bnot        = luao::LuaValue(std::make_shared<luao::LuaString>("__bnot"),        LuaType::STRING);
+    luao::LuaValue __shl         = luao::LuaValue(std::make_shared<luao::LuaString>("__shl"),         LuaType::STRING);
+    luao::LuaValue __shr         = luao::LuaValue(std::make_shared<luao::LuaString>("__shr"),         LuaType::STRING);
+    luao::LuaValue __eq          = luao::LuaValue(std::make_shared<luao::LuaString>("__eq"),          LuaType::STRING);
+    luao::LuaValue __lt          = luao::LuaValue(std::make_shared<luao::LuaString>("__lt"),          LuaType::STRING);
+    luao::LuaValue __le          = luao::LuaValue(std::make_shared<luao::LuaString>("__le"),          LuaType::STRING);
+    luao::LuaValue __concat      = luao::LuaValue(std::make_shared<luao::LuaString>("__concat"),      LuaType::STRING);
+    luao::LuaValue __len         = luao::LuaValue(std::make_shared<luao::LuaString>("__len"),         LuaType::STRING);
+    luao::LuaValue __tostring    = luao::LuaValue(std::make_shared<luao::LuaString>("__tostring"),    LuaType::STRING);
+    luao::LuaValue __metatable   = luao::LuaValue(std::make_shared<luao::LuaString>("__metatable"),   LuaType::STRING);
+    luao::LuaValue __name        = luao::LuaValue(std::make_shared<luao::LuaString>("__name"),        LuaType::STRING);
+    luao::LuaValue __pairs       = luao::LuaValue(std::make_shared<luao::LuaString>("__pairs"),       LuaType::STRING);
+    luao::LuaValue __ipairs      = luao::LuaValue(std::make_shared<luao::LuaString>("__ipairs"),      LuaType::STRING); 
+    luao::LuaValue __index       = luao::LuaValue(std::make_shared<luao::LuaString>("__index"),       LuaType::STRING);
+    luao::LuaValue __newindex    = luao::LuaValue(std::make_shared<luao::LuaString>("__newindex"),    LuaType::STRING);
+    luao::LuaValue __call        = luao::LuaValue(std::make_shared<luao::LuaString>("__call"),        LuaType::STRING);
+    luao::LuaValue __mode        = luao::LuaValue(std::make_shared<luao::LuaString>("__mode"),        LuaType::STRING);
+    luao::LuaValue __close       = luao::LuaValue(std::make_shared<luao::LuaString>("__close"),       LuaType::STRING);
+    luao::LuaValue __gc          = luao::LuaValue(std::make_shared<luao::LuaString>("__gc"),          LuaType::STRING);
+    // luao extension
+    luao::LuaValue __iterator    = luao::LuaValue(std::make_shared<luao::LuaString>("__iterator"),    LuaType::STRING);
+    luao::LuaValue __newinstance = luao::LuaValue(std::make_shared<luao::LuaString>("__newinstance"), LuaType::STRING);
 }
 
 namespace luao {
@@ -143,36 +112,50 @@ void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const I
     std::cerr << "#\n";
 }
 
+static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
+    const auto& updescs = closure->getFunction()->getUpvalDescs();
+    auto& stack = vm.get_stack_mutable();
+    LuaClosure* parent = nullptr;
+    if (!vm.get_call_stack().empty()) parent = vm.get_call_stack().back().closure;
+
+    for (const auto& desc : updescs) {
+        std::shared_ptr<UpValue> uv = nullptr;
+
+        if (desc.name == "_ENV") {
+            if (parent) {
+                uv = parent->getUpvalues()[desc.idx];
+            } else {
+                auto env_v = std::make_shared<LuaValue>(std::make_shared<LuaTable>(), LuaType::TABLE);
+                uv = std::make_shared<UpValue>(env_v);
+            }
+        } else if (desc.inStack) {
+            uv = new UpValue(&stack[desc.idx]);
+        } else {
+            if (parent) {
+                uv = parent->getUpvalues()[desc.idx];
+            } else {
+                uv = std::make_shared<UpValue>(&stack[0]);
+            }
+        }
+
+        closure->getUpvalues().push_back(uv);
+    }
+}
+
 VM::VM() : top(0) {
     stack.resize(256);
 }
 
 void VM::load(LuaClosure* main_closure) {
-    main_function_ = LuaValue(main_closure, LuaType::FUNCTION);
     call_stack.clear();
     stack.clear();
     stack.resize(256);
     top = 0;
 
-    // Initialize global _ENV at R0
-    stack[0] = LuaValue(new LuaTable(), LuaType::TABLE);
-    // Initialize upvalues for main closure according to its prototype
-    if (main_closure && main_closure->getFunction()) {
-        auto* func = main_closure->getFunction();
-        auto& updescs = func->getUpvalDescs();
-        auto& upvals = main_closure->getUpvalues();
-        upvals.reserve(updescs.size());
-        for (const auto& desc : updescs) {
-            UpValue* uv = nullptr;
-            if (desc.inStack) {
-                uv = new UpValue(&stack[desc.idx]);
-            } else {
-                // for main, capture from nowhere; fallback to R0
-                uv = new UpValue(&stack[0]);
-            }
-            uv->retain();
-            upvals.push_back(uv);
-        }
+    if (main_closure) {
+        setup_closure(main_closure, *this);
+    } else {
+        throw std::runtime_error("main_closure are null");
     }
 
     call_stack.emplace_back(main_closure, &main_closure->getFunction()->getBytecode()[0], 0);
@@ -272,12 +255,11 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
         if (auto* closure = dynamic_cast<LuaClosure*>(fn.getObject())) {
             int new_stack_base = base;
 
+            std::cout << "trying to call function " << closure->getFunction()->getSource() << std::endl;
+
             // 引数を新フレームにコピー
             for (int j = 0; j < num_args; ++j)
                 stack[new_stack_base + 1 + j] = stack[base + 1 + j];
-
-            // CALL 命令用 PC 更新
-            frame->pc = vm.get_current_pc();
 
             // 新しい CallInfo 作成してスタックに追加
             call_stack.emplace_back(closure, &closure->getFunction()->getBytecode()[0], new_stack_base);
@@ -320,8 +302,15 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
         }
     }
 
-    // 呼び出せない値
-    std::cerr << "Attempt to call a " << fn.typeName() << " value" << std::endl;
+    if (fn.getObject()) {
+        try {
+            std::cerr << "Attempt to call a " << fn.getObject()->typeName() << " value" << std::endl;
+        } catch (...) {
+            throw std::runtime_error("vcall detected corrupted LuaValue");
+        }
+    } else {
+        std::cerr << "Attempt to call a nil value" << std::endl;
+    }
 }
 
 static bool checkluaint(const LuaValue& value) {
@@ -734,16 +723,17 @@ void VM::run() {
         LuaFunction* func = frame->closure->getFunction();
 
         for (;;) {
+            if (stack.size() >= LUAO_MAXSTACK) {
+                throw std::runtime_error("stack overflow");
+            }
+
             Instruction i = *pc++;
             if (trace_execution) {
                 std::cout << disassemble_instruction(i, func) << std::endl;
             }
             OpCode op = GET_OPCODE(i);
 
-            std::cout << "PC=" << *pc
-                      << " OPCODE=" << static_cast<int>(op)
-                      << " STACK_TOP=" << top
-                      << std::endl;
+            //dump_critical_error(*this, "debug output", frame, pc);
 
             switch (op) {
                 case OpCode::MOVE: {
@@ -825,7 +815,7 @@ void VM::run() {
                     if (auto* table = dynamic_cast<LuaTable*>(t.getObject())) {
                         stack[frame->stack_base + a] = table->get(k);
                     } else {
-                        std::cerr << "GETTABUP on non-table upvalue" << std::endl;
+                        throw std::runtime_error("GETTABUP: non-table upvalue");
                     }
                     top = frame->stack_base + a + 1;
                     break;
@@ -1509,6 +1499,8 @@ void VM::run() {
                     int num_args = (b == 0) ? (top - (frame->stack_base + a + 1)) : (b - 1);
                     int num_results = (c == 0) ? -1 : (c - 1);
 
+                    frame->pc = pc;
+
                     vcall(*this, frame, func_val, frame->stack_base + a, num_args, num_results);
                                 
                     break;
@@ -1646,6 +1638,7 @@ void VM::run() {
                     if (proto_val.getType() == LuaType::FUNCTION) {
                         auto* proto = dynamic_cast<LuaFunction*>(proto_val.getObject());
                         LuaClosure* new_closure = new LuaClosure(proto);
+                        setup_closure(new_closure, *this);
                         // initialize captured upvalues
                         const auto& updescs = proto->getUpvalDescs();
                         auto& new_upvals = new_closure->getUpvalues();

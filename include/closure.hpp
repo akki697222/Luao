@@ -32,6 +32,10 @@ public:
         return upvalues_;
     }
 
+    void setUpvalue(int index, UpValue* upvalue) {
+        upvalues_[index] = upvalue;
+    }
+
     LuaType getType() const override { return LuaType::FUNCTION; }
     std::string typeName() const override { return "function"; }
 

@@ -4,18 +4,9 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <memory>
 
 namespace luao {
-
-class LuaObject;
-class LuaGCObject;
-class LuaValue;
-class LuaInteger;
-class LuaNumber;
-class LuaString;
-class LuaFunction;
-class LuaTable;
-class LuaClosure;
 
 class LuaObject {
 public:
@@ -30,25 +21,22 @@ public:
     }
 };
 
-class LuaGCObject : public LuaObject {
+class LuaGCObject : public LuaObject, public std::enable_shared_from_this<LuaGCObject> {
 public:
-    LuaGCObject() : refCount(0) {}
+    LuaGCObject() = default;
     virtual ~LuaGCObject() = default;
 
-    void retain() { ++refCount; }
-    void release() { if (--refCount == 0) delete this; }
-
     // metatables
-    LuaTable* getMetatable() const { return this->metatable; }
-    void setMetatable(LuaTable* metatable) { this->metatable = metatable; }
+    std::shared_ptr<class LuaTable> getMetatable() const { return metatable; }
+    void setMetatable(std::shared_ptr<class LuaTable> mt) { metatable = mt; }
 
     LuaValue getMetamethod(const LuaValue& key) const;
+
 private:
-    int refCount;
-    LuaTable* metatable = nullptr;
+    std::shared_ptr<class LuaTable> metatable = nullptr;
 };
 
-/* immediate value, so its not requires gc */
+/* immediate values (no GC) */
 class LuaInteger : public LuaObject {
 public:
     LuaInteger(luaInt value) : value(value) {}
@@ -61,7 +49,6 @@ private:
     luaInt value;
 };
 
-/* immediate value, so its not requires gc */
 class LuaNumber : public LuaObject {
 public:
     LuaNumber(luaNumber value) : value(value) {}
@@ -74,7 +61,6 @@ private:
     luaNumber value;
 };
 
-/* immediate value, so its not requires gc */
 class LuaBool : public LuaObject {
 public:
     LuaBool(bool value) : value(value) {}
@@ -99,52 +85,28 @@ private:
     std::string value;
 };
 
+/* LuaValue using shared_ptr for GC objects */
 class LuaValue {
 public:
-    LuaValue() : obj(nullptr), type(LuaType::NIL) {}
+    LuaValue() : type(LuaType::NIL) {}
 
-    LuaValue(LuaObject* obj, LuaType type) : obj(obj), type(type) {
-        if (isGCObject() && obj != nullptr) {
-            static_cast<LuaGCObject*>(obj)->retain();
-        }
-    }
+    LuaValue(std::shared_ptr<LuaObject> obj, LuaType type) : obj(obj), type(type) {}
 
-    LuaValue(const LuaValue& other) : obj(other.obj), type(other.type) {
-        if (isGCObject() && obj != nullptr) {
-            static_cast<LuaGCObject*>(obj)->retain();
-        }
-    }
+    LuaValue(const LuaValue& other) : obj(other.obj), type(other.type) {}
 
     LuaValue& operator=(const LuaValue& other) {
         if (this != &other) {
-            if (isGCObject() && obj != nullptr) {
-                static_cast<LuaGCObject*>(obj)->release();
-            }
-
             obj = other.obj;
             type = other.type;
-
-            if (isGCObject() && obj != nullptr) {
-                static_cast<LuaGCObject*>(obj)->retain();
-            }
         }
         return *this;
     }
 
-    ~LuaValue() {
-        if (isGCObject() && obj != nullptr) {
-            static_cast<LuaGCObject*>(obj)->release();
-        }
-    }
-
     LuaType getType() const { return type; }
-    LuaObject* getObject() const { return obj; }
+    std::shared_ptr<LuaObject> getObject() const { return obj; }
+
     std::string typeName() const {
-        if (obj) {
-            return obj->typeName();
-        } else {
-            return "nil";
-        }
+        return obj ? obj->typeName() : "nil";
     }
 
     bool isGCObject() const {
@@ -157,13 +119,15 @@ public:
             case LuaType::OBJECT:
             case LuaType::INSTANCE:
             case LuaType::THROWABLE:
+            case LuaType::PROTO:
                 return true;
             default:
                 return false;
         }
     }
+
 private:
-    LuaObject* obj;
+    std::shared_ptr<LuaObject> obj;
     LuaType type;
 };
 

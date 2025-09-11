@@ -16,10 +16,52 @@ struct UpvalDesc {
     int idx;         
 };
 
+struct Lineinfo {
+    int op;
+    int line;
+};
+
 class LuaFunction : public LuaGCObject {
 public:
-    LuaFunction(std::vector<Instruction> bytecode, std::vector<LuaValue> constants, std::vector<LuaValue> protos, std::vector<UpvalDesc> upvalDescs)
-        : bytecode(std::move(bytecode)), constants(std::move(constants)), protos(std::move(protos)), upvalDescs(std::move(upvalDescs)) {}
+    LuaFunction(
+        std::vector<Instruction> bytecode, 
+        std::vector<LuaValue> constants, 
+        std::vector<LuaValue> protos, 
+        std::vector<UpvalDesc> upvalDescs
+    )
+        : bytecode(std::move(bytecode)),
+          constants(std::move(constants)), 
+          protos(std::move(protos)),
+          upvalDescs(std::move(upvalDescs)) 
+    {
+        source = "<none>";
+        lineinfos = {};
+        linedefined = 0;
+        lastlinedefined = 0;
+    }
+
+    LuaFunction(
+        std::vector<Instruction> bytecode, 
+        std::vector<LuaValue> constants, 
+        std::vector<LuaValue> protos, 
+        std::vector<UpvalDesc> upvalDescs,
+        std::string source,
+        std::vector<Lineinfo> lineinfos,
+        int linedefined,
+        int lastlinedefined
+    )
+        : bytecode(std::move(bytecode)),
+          constants(std::move(constants)), 
+          protos(std::move(protos)),
+          upvalDescs(std::move(upvalDescs)),
+          source(std::move(source)),
+          lineinfos(std::move(lineinfos)),
+          linedefined(linedefined),
+          lastlinedefined(lastlinedefined)
+    {
+        
+    }
+
 
     LuaType getType() const override { return LuaType::FUNCTION; }
     std::string typeName() const override { return "prototype"; }
@@ -38,6 +80,10 @@ private:
     std::vector<LuaValue> protos;
     std::vector<UpvalDesc> upvalDescs;
     std::vector<LuaValue> varargs;
+    std::string source;
+    std::vector<Lineinfo> lineinfos;
+    int linedefined;
+    int lastlinedefined;
 };
 
 } // namespace luao
