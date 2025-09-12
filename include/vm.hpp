@@ -110,6 +110,9 @@ namespace luao {
         bool eq(const LuaValue& a, const LuaValue& b);
         bool lt(const LuaValue& a, const LuaValue& b);
         bool le(const LuaValue& a, const LuaValue& b);
+        
+        // for debug
+        Instruction* last_instruction;
     private:
         std::vector<CallInfo> call_stack;
         std::vector<std::shared_ptr<LuaValue>> stack;

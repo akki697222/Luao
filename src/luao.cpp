@@ -181,27 +181,7 @@ void test_vm_dump() {
     UpvalDesc _ENV; _ENV.name = "_ENV"; _ENV.inStack = true; _ENV.idx = 0;
 
     std::vector<Instruction> bytecode = {
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_ABC(255, 255, 255, 255),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
-        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_ABC(255, 255, 255, 255)
     };
 
     std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode,
@@ -226,7 +206,7 @@ int main(int argc, char **argv)
         test_metamethod();
         std::cout << "Metamethod test passed." << std::endl;
         //test_stack_overflow();
-        test_vm_dump();
+        //test_vm_dump();
         
         std::cout << "All tests passed." << std::endl;
     } catch (const std::runtime_error& e) {

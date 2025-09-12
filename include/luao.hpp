@@ -32,6 +32,10 @@
 
 #define LUAERR(msg) std::cerr << msg << std::endl
 
+/* General */
+#define LUAO_GLOBAL "_G"
+#define LUAO_ENV "_ENV"
+
 typedef long long luaInt;
 typedef double luaNumber;
 

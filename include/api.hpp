@@ -7,9 +7,7 @@
 namespace luao {
 namespace api {
 
-static LuaValue& getglobal(VM& vm, CallInfo* ci) {
-    
-}
+static LuaValue& getglobal(VM& vm, CallInfo* ci);
 
 } // namespace api
 } // namespace luao

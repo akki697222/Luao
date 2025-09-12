@@ -60,28 +60,20 @@ namespace luao {
 
 void dump_critical_error(VM& vm, std::string err) {
     CallInfo* frame = &vm.get_call_stack_mutable().back();
-    const Instruction* current_pc = frame->pc;
     std::cerr << "#\n";
     std::cerr << "# Luao VM\n";
     std::cerr << "#\n";
     std::cerr << "# VM Fatal Error: " << err << "\n";
     std::cerr << "#\n";
-    std::cerr << "# Bytecode around PC\n";
     if (frame && frame->closure) {
         std::shared_ptr<LuaFunction> func = frame->closure->getFunction();
-        const auto& code = func->getBytecode();
-        int idx = static_cast<int>(current_pc - &code[0]);
-        int start = std::max(0, idx - CRITICAL_DUMP_CONTEXT_LINES);
-        int end = std::min(static_cast<int>(code.size()), idx + CRITICAL_DUMP_CONTEXT_LINES + 1);
-        for (int i = start; i < end; i++) {
-            const Instruction& inst = code[i];
-            std::cerr << (i == idx ? "# >" : "#  ")
-                      << std::setw(3) << i << ": "
-                      << std::setw(2) << static_cast<int>(GET_OPCODE(inst)) << to_string(GET_OPCODE(inst)) << " "
-                      << std::setw(3) << GETARG_A(inst) << " "
-                      << std::setw(3) << GETARG_B(inst) << " "
-                      << std::setw(3) << GETARG_C(inst) << "\n";
-        }
+        const Instruction* inst = vm.last_instruction;
+        std::cerr << "# Faulting instruction:\n";
+        std::cerr << "#  "
+                  << to_string(GET_OPCODE(*inst)) << " "
+                  << GETARG_A(*inst) << " "
+                  << GETARG_B(*inst) << " "
+                  << GETARG_C(*inst) << "\n";
     }
     std::cerr << "#\n";
     std::cerr << "# Stack\n";
@@ -755,6 +747,7 @@ void VM::run() {
             }
 
             Instruction i = *pc++;
+            last_instruction = &i;
             if (trace_execution) {
                 std::cout << disassemble_instruction(i, func) << std::endl;
             }
