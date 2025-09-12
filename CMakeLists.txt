@@ -20,6 +20,7 @@ set(SOURCES
     src/parser.cpp
     src/table.cpp
     src/vm.cpp
+    src/baselib.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

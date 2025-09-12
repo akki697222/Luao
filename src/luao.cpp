@@ -193,8 +193,47 @@ void test_vm_dump() {
     std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
     vm = VM();
     vm.load(main_closure);
-    vm.set_trace(false);
+    vm.set_trace(true);
     vm.run();
+}
+
+void test_baselib() {
+    std::cout << "--- Testing Basic Library ---" << std::endl;
+    UpvalDesc _ENV; _ENV.name = "_ENV"; _ENV.inStack = true; _ENV.idx = 0;
+
+    std::vector<Instruction> bytecode = {
+        CREATE_A(OpCode::VARARGPREP, 0),
+        /*
+        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0),
+        CREATE_ABx(OpCode::LOADK, 1, 1),
+        CREATE_ABC(OpCode::CALL, 0, 2, 1),
+        */
+        CREATE_ABC(OpCode::GETTABUP, 0, 0, 2),
+        CREATE_A(OpCode::LOADFALSE, 1),
+        CREATE_ABx(OpCode::LOADK, 2, 3),
+        CREATE_ABC(OpCode::CALL, 0, 3, 0),
+        CREATE_ABC(OpCode::RETURN, 0, 1, 1)
+    };
+
+    std::vector<LuaValue> constants = {
+        LuaValue(std::make_shared<LuaString>("print"), LuaType::STRING),
+        LuaValue(std::make_shared<LuaString>("Hello, World!"), LuaType::STRING),
+        LuaValue(std::make_shared<LuaString>("assert"), LuaType::STRING),
+        LuaValue(std::make_shared<LuaString>("assertion successfully failed"), LuaType::STRING),
+    };
+
+    std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode,
+        constants,
+        std::vector<LuaValue>{},
+        std::vector<UpvalDesc>{_ENV},
+        std::vector<LocalVarinfo>{}
+    );
+    std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
+    vm = VM();
+    vm.load(main_closure);
+    vm.set_trace(true);
+    vm.run();
+    //dump_critical_error(vm, "test");
 }
 
 int main(int argc, char **argv)
@@ -207,6 +246,7 @@ int main(int argc, char **argv)
         std::cout << "Metamethod test passed." << std::endl;
         //test_stack_overflow();
         //test_vm_dump();
+        test_baselib();
         
         std::cout << "All tests passed." << std::endl;
     } catch (const std::runtime_error& e) {

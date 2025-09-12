@@ -90,6 +90,14 @@ public:
     LuaType getType() const override { return LuaType::STRING; }
     std::string toString() const override { return value; }
     std::string typeName() const override { return "string"; }
+
+    bool operator<(const LuaString& other) const noexcept {
+        return value < other.value;
+    }
+
+    bool operator==(const LuaString& other) const noexcept {
+        return value == other.value;
+    }
 private:
     std::string value;
 };
@@ -116,6 +124,10 @@ public:
 
     std::string typeName() const {
         return obj ? obj->typeName() : "nil";
+    }
+
+    std::string toString() const {
+        return obj ? obj->toString() : "nil";
     }
 
     bool isGCObject() const {

@@ -10,6 +10,8 @@
 #include <config.hpp>
 #include <upvalue.hpp>
 #include <memory>
+#include <map>
+#include <libs.hpp>
 
 namespace mm {
     const luao::LuaValue __add         = luao::LuaValue(std::make_shared<luao::LuaString>("__add"),         LuaType::STRING);
@@ -146,8 +148,21 @@ void VM::load(std::shared_ptr<LuaClosure> main_closure) {
     top = 0;
 
     auto env_table = std::make_shared<LuaTable>();
-    *stack[0] = LuaValue(env_table, LuaType::TABLE);
+    auto env_value = LuaValue(env_table, LuaType::TABLE);
+    *stack[0] = env_value;
     top = 1;
+
+    env_table->set(LuaValue(std::make_shared<LuaString>("_G"), LuaType::STRING), env_value);
+
+    std::vector<std::map<LuaString, LuaValue>> libs_list = {
+        getbaselib()
+    };
+
+    for (auto& lib  : libs_list) {
+        for (const auto& [name, value] : lib) {
+            env_table->set(LuaValue(std::make_shared<LuaString>(name), LuaType::STRING), value);
+        }
+    }
 
     if (main_closure) {
         setup_closure(main_closure, *this);
