@@ -51,7 +51,7 @@ namespace luao {
     struct CallInfo;
     class VM;
 
-    void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const Instruction* current_pc);
+    void dump_critical_error(VM& vm, std::string err);
 
     struct CallInfo {
         std::shared_ptr<LuaClosure> closure;
@@ -60,6 +60,12 @@ namespace luao {
 
         CallInfo(std::shared_ptr<LuaClosure> closure, const Instruction* pc, int stack_base)
         : closure(std::move(closure)), pc(pc), stack_base(stack_base) {}
+    };
+
+    struct LuaError : public std::exception {
+        std::string message;
+        LuaError(std::string msg) : message(std::move(msg)) {}
+        const char* what() const noexcept override { return message.c_str(); }
     };
 
     class VM {
@@ -78,6 +84,7 @@ namespace luao {
         std::vector<CallInfo>& get_call_stack_mutable();
         const CallInfo& get_call_stack_top() const;
         const Instruction* get_current_pc();
+        LuaValue get_upval_table(int upval_index, const LuaValue& key);
         
         // Arithmetic operations with metamethod support
         LuaValue add(const LuaValue& a, const LuaValue& b);

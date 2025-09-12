@@ -58,7 +58,9 @@ namespace luao {
 #define GETARG_Bx(i)    ((i) >> 15)
 #define GETARG_sBx(i)   (static_cast<int>(GETARG_Bx(i)) - 65535)
 
-void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const Instruction* current_pc) {
+void dump_critical_error(VM& vm, std::string err) {
+    CallInfo* frame = &vm.get_call_stack_mutable().back();
+    const Instruction* current_pc = frame->pc;
     std::cerr << "#\n";
     std::cerr << "# Luao VM\n";
     std::cerr << "#\n";
@@ -75,7 +77,7 @@ void dump_critical_error(const VM& vm, std::string err, CallInfo* frame, const I
             const Instruction& inst = code[i];
             std::cerr << (i == idx ? "# >" : "#  ")
                       << std::setw(3) << i << ": "
-                      << std::setw(2) << static_cast<int>(GET_OPCODE(inst)) << "(" << to_string(GET_OPCODE(inst)) << ") "
+                      << std::setw(2) << static_cast<int>(GET_OPCODE(inst)) << to_string(GET_OPCODE(inst)) << " "
                       << std::setw(3) << GETARG_A(inst) << " "
                       << std::setw(3) << GETARG_B(inst) << " "
                       << std::setw(3) << GETARG_C(inst) << "\n";
@@ -237,6 +239,26 @@ static const LuaValue& mm_key_from_C(int c) {
     }
 }
 
+LuaValue VM::get_upval_table(int upval_index, const LuaValue& key) {
+    CallInfo* frame = &call_stack.back();
+    auto& upvals = frame->closure->getUpvalues();
+
+    if (upval_index < 0 || upval_index >= static_cast<int>(upvals.size())) {
+        throw std::runtime_error("GETTABUP: invalid upvalue index");
+    }
+
+    auto loc = upvals[upval_index]->getLocation().lock();
+    if (!loc) {
+        throw std::runtime_error("GETTABUP: upvalue is closed");
+    }
+
+    if (auto table = std::dynamic_pointer_cast<LuaTable>(loc->getObject())) {
+        return table->get(key);
+    } else {
+        throw std::runtime_error("GETTABUP: non-table upvalue");
+    }
+}
+
 static void vreturn(VM& vm, CallInfo* frame, int base, int nresults) {
     if (nresults == 0) {
         vm.set_top(frame->stack_base);
@@ -254,7 +276,7 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
     auto& call_stack = vm.get_call_stack_mutable();
 
     if (call_stack.size() >= LUAI_MAXCALLS) {
-        throw std::runtime_error("call stack overflow");
+        throw LuaError("call stack overflow");
     }
 
     if (fn.getType() == LuaType::FUNCTION) {
@@ -311,12 +333,12 @@ static void vcall(VM& vm, CallInfo* frame, const LuaValue& fn, int base, int num
 
     if (fn.getObject()) {
         try {
-            std::cerr << "Attempt to call a " << fn.getObject()->typeName() << " value" << std::endl;
+            throw LuaError("Attempt to call a " + fn.typeName() + " value");
         } catch (...) {
-            throw std::runtime_error("vcall detected corrupted LuaValue");
+            throw std::runtime_error("vcall: detected corrupted LuaValue");
         }
     } else {
-        std::cerr << "Attempt to call a nil value" << std::endl;
+        throw LuaError("Attempt to call a nil value");
     }
 }
 
@@ -353,8 +375,7 @@ static std::shared_ptr<LuaValue> try_arithmetic_metamethod(VM& vm, const LuaValu
     }
 
     if (!mm.getObject()) {
-        std::cerr << "attempt to perform " << (mt_key.getObject() == mm::__concat.getObject() ? "concatenate" : "arithmetic") << " on a " << a.typeName() << " value" << std::endl;
-        return nullptr; // nil
+        throw LuaError("attempt to perform " + std::string(mt_key.getObject() == mm::__concat.getObject() ? "concatenate" : "arithmetic") + " on a " + a.typeName() + " value");
     }
 
     // vcall を使って __add を呼ぶ
@@ -587,8 +608,7 @@ LuaValue VM::len(const LuaValue& a) {
     } else {
         return call_metamethod(*this, mm::__len, {a});
     }
-    std::cerr << "attempt to get length of a " << a.typeName() << " value" << std::endl;
-    return LuaValue();
+    throw LuaError("attempt to get length of a " + a.typeName() + " value");
 }
 
 LuaValue VM::concat(const LuaValue& a, const LuaValue& b) {
@@ -731,7 +751,7 @@ void VM::run() {
 
         for (;;) {
             if (stack.size() >= LUAI_MAXSTACK) {
-                throw std::runtime_error("stack overflow");
+                throw LuaError("stack overflow");
             }
 
             Instruction i = *pc++;
@@ -807,103 +827,55 @@ void VM::run() {
                     top = frame->stack_base + a + b + 1;
                     break;
                 }
-                // case OpCode::GETUPVAL: {}
-                // case OpCode::SETUPVAL: {}
                 case OpCode::GETTABUP: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
-                                
-                    auto& upvals = frame->closure->getUpvalues();
-                    if (b < 0 || b >= static_cast<int>(upvals.size())) {
-                        throw std::runtime_error("GETTABUP: invalid upvalue index");
-                    }
-                
-                    auto loc = upvals[b]->getLocation().lock();
-                    if (!loc) {
-                        throw std::runtime_error("GETTABUP: upvalue is closed");
-                    }
-                
+                    
                     LuaValue k = func->getConstants()[c];
-                
-                    if (auto table = std::dynamic_pointer_cast<LuaTable>(loc->getObject())) {
-                        *stack[frame->stack_base + a] = table->get(k);
-                    } else {
-                        throw std::runtime_error("GETTABUP: non-table upvalue");
-                    }
+                    *stack[frame->stack_base + a] = get_upval_table(b, k);
                 
                     top = frame->stack_base + a + 1;
                     break;
                 }
+                case OpCode::GETI: 
+                case OpCode::GETFIELD:
                 case OpCode::GETTABLE: {
                     int a = GETARG_A(i);
                     int b = GETARG_B(i);
                     int c = GETARG_C(i);
 
                     LuaValue t = *stack[frame->stack_base + b];
-                    LuaValue k = *stack[frame->stack_base + c];
+                    LuaValue k;
+                    if (op == OpCode::GETFIELD) {
+                        k = func->getConstants()[c];
+                    } else if (op == OpCode::GETI) {
+                        k = LuaValue(std::make_shared<LuaInteger>(c), LuaType::NUMBER);
+                    } else {
+                        k = *stack[frame->stack_base + c];
+                    }
+                    
+                    LuaValue res = LuaValue();
 
                     if (t.getType() == LuaType::TABLE) {
                         if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
-                            *stack[frame->stack_base + a] = table->get(k);
-                        } else {
-                            // metamethod
+                            res = table->get(k);
+                        }
+                        if (!res.getObject()) {
+                            res = call_metamethod(*this, mm::__index, {t, k});
                         }
                     } else {
                         if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
-                            // metamethod
-                        } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                            if (gc->getMetamethod(mm::__index).getObject()) {
+                                res = call_metamethod(*this, mm::__index, {t, k});
+                            } else {
+                                throw LuaError("Attempt to index a " + t.typeName() + " value");
+                            }
                         }
                     }
+
+                    *stack[frame->stack_base + a] = res;
                     top = frame->stack_base + a + 1;
-                    break;
-                }
-                case OpCode::GETI: {
-                    int a = GETARG_A(i);
-                    int b = GETARG_B(i);
-                    int c = GETARG_C(i);
-
-                    LuaValue t = *stack[frame->stack_base + b];
-
-                    if (t.getType() == LuaType::TABLE) {
-                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
-                            *stack[frame->stack_base + a] = table->get(c);
-                        } else {
-                            // metamethod
-                        }
-                    } else {
-                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
-                            // metamethod
-                        } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
-                        }
-                    }
-
-                    top = frame->stack_base + a + 1;
-                    break;
-                }
-                case OpCode::GETFIELD: {
-                    int a = GETARG_A(i);
-                    int b = GETARG_B(i);
-                    int c = GETARG_C(i);
-
-                    LuaValue t = *stack[frame->stack_base + b];
-                    LuaValue k = func->getConstants()[c];
-
-                    if (t.getType() == LuaType::TABLE) {
-                        if (auto table = std::dynamic_pointer_cast<LuaTable>(t.getObject())) {
-                            *stack[frame->stack_base + a] = table->get(k);
-                        } else {
-                            // metamethod
-                        }
-                    } else {
-                        if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
-                            // metamethod
-                        } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
-                        }
-                    }
                     break;
                 }
                 case OpCode::SETTABUP: {
@@ -916,8 +888,7 @@ void VM::run() {
                     }
                     auto loc = upvals[a]->getLocation().lock();
                     if (!loc) {
-                        std::cerr << "SETTABUP: upvalue is closed" << std::endl;
-                        break;
+                        throw std::runtime_error("SETTABUP: upvalue is closed");
                     }
 
                     if (auto table = std::dynamic_pointer_cast<LuaTable>(loc->getObject())) {
@@ -925,7 +896,7 @@ void VM::run() {
                         LuaValue v = *stack[frame->stack_base + c];
                         table->set(k, v);
                     } else {
-                        std::cerr << "SETTABUP on non-table upvalue" << std::endl;
+                        throw std::runtime_error("SETTABUP on non-table upvalue");
                     }
                     break;
                 }
@@ -948,7 +919,7 @@ void VM::run() {
                         if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                            throw LuaError("attempt to index a " + t.typeName() + " value");
                         }
                     }
 
@@ -972,7 +943,7 @@ void VM::run() {
                         if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                            throw LuaError("attempt to index a " + t.typeName() + " value");
                         }
                     }
 
@@ -997,7 +968,7 @@ void VM::run() {
                         if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(t.getObject())) {
                             // metamethod
                         } else {
-                            std::cerr << "Attempt to index a " << t.getObject()->typeName() << " value" << std::endl;
+                            throw LuaError("attempt to index a " + t.typeName() + " value");
                         }
                     }
 
@@ -1032,7 +1003,7 @@ void VM::run() {
                         if (auto gc = std::dynamic_pointer_cast<LuaGCObject>(self.getObject())) {
                             // metamethod handling would go here
                         } else {
-                            std::cerr << "Attempt to index a " << self.typeName() << " value" << std::endl;
+                            throw LuaError("attempt to index a " + self.typeName() + " value");
                         }
                     }
                     top = frame->stack_base + a + 2;
@@ -1549,8 +1520,7 @@ void VM::run() {
                             break;
                         }
                     }
-                    std::cerr << "Attempt to tail call a " << func_val.typeName() << " value" << std::endl;
-                    return; // or error
+                    throw std::runtime_error("TAILCALL: attempt to call a non-closure or native function (a " + func_val.typeName() + ") value");
                 }
                 case OpCode::RETURN:
                 case OpCode::RETURN0:
@@ -1677,7 +1647,7 @@ void VM::run() {
                         }
                         *stack[frame->stack_base + a] = LuaValue(new_closure, LuaType::FUNCTION);
                     } else {
-                        throw std::runtime_error("Attempt to create closure from non-function(proto) value");
+                        throw std::runtime_error("Attempt to create closure from non-prototype (a " + proto_val.typeName() + ") value");
                     }
                     break;
                 }
@@ -1712,7 +1682,7 @@ void VM::run() {
                     LuaValue vb = *stack[frame->stack_base + b];
                                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
-                        std::cerr << "metamethod not found for MMBIN" << std::endl;
+                        throw std::runtime_error("MMBIN: metamethod not found");
                     }
                 
                     top = frame->stack_base + a + 1;
@@ -1729,7 +1699,7 @@ void VM::run() {
                     LuaValue vb(std::make_shared<LuaInteger>(sb), LuaType::NUMBER);
                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
-                        std::cerr << "metamethod not found for MMBINI" << std::endl;
+                        throw std::runtime_error("MMBINI: metamethod not found");
                     }
                 
                     top = frame->stack_base + a + 1;
@@ -1746,7 +1716,7 @@ void VM::run() {
                     LuaValue vb = func->getConstants()[b];
                 
                     if (!(try_call_bin_metamethod(*this, frame, key, va, vb, a) || try_call_bin_metamethod(*this, frame, key, vb, va, a))) {
-                        std::cerr << "metamethod not found for MMBINK" << std::endl;
+                        throw std::runtime_error("MMBINK: metamethod not found");
                     }
                 
                     top = frame->stack_base + a + 1;
@@ -1839,8 +1809,10 @@ void VM::run() {
                     break;
                 }
                 default: {
-                    std::cout << "Unknown opcode: " << to_string(op) << std::endl;
-                    return;
+                    std::stringstream ss;
+                    ss << "VM Detected Illegal opcode in bytecode. op: 0x"
+                       << std::hex << std::uppercase << static_cast<int>(op);
+                    throw std::runtime_error(ss.str());
                 }
             }
             // If we are here, it means we have returned from a function or called one.

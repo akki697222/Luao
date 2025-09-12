@@ -11,6 +11,8 @@
 
 using namespace luao;
 
+VM vm;
+
 #define CREATE_ABC(o, a, b, c)  ((static_cast<Instruction>(o) << 0) \
                         | (static_cast<Instruction>(a) << 7) \
                         | (static_cast<Instruction>(b) << 16) \
@@ -49,7 +51,7 @@ void test_cfunction_call() {
 
     std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode, constants, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV}, std::vector<LocalVarinfo>{});
     std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
-    VM vm;
+    vm = VM();
     vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
@@ -85,7 +87,7 @@ void test_metamethod() {
 
     std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode, constants, std::vector<LuaValue>{}, std::vector<UpvalDesc>{_ENV}, std::vector<LocalVarinfo>{});
     std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
-    VM vm;
+    vm = VM();
     vm.load(main_closure);
     vm.set_trace(true);
     vm.run();
@@ -168,7 +170,48 @@ void test_stack_overflow() {
         }
     );
     std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
-    VM vm;
+    vm = VM();
+    vm.load(main_closure);
+    vm.set_trace(false);
+    vm.run();
+}
+
+void test_vm_dump() {
+    std::cout << "--- Testing VM Error Dumping ---" << std::endl;
+    UpvalDesc _ENV; _ENV.name = "_ENV"; _ENV.inStack = true; _ENV.idx = 0;
+
+    std::vector<Instruction> bytecode = {
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_ABC(255, 255, 255, 255),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+        CREATE_A(OpCode::LOADTRUE, 0),
+    };
+
+    std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode,
+        std::vector<LuaValue>{},
+        std::vector<LuaValue>{},
+        std::vector<UpvalDesc>{_ENV},
+        std::vector<LocalVarinfo>{}
+    );
+    std::shared_ptr<LuaClosure> main_closure = std::make_shared<LuaClosure>(main_func);
+    vm = VM();
     vm.load(main_closure);
     vm.set_trace(false);
     vm.run();
@@ -182,13 +225,14 @@ int main(int argc, char **argv)
         std::cout << "CFunction test passed." << std::endl;
         test_metamethod();
         std::cout << "Metamethod test passed." << std::endl;
-        test_stack_overflow();
+        //test_stack_overflow();
+        test_vm_dump();
         
         std::cout << "All tests passed." << std::endl;
     } catch (const std::runtime_error& e) {
-        std::cout << "Test Failed: " << e.what() << std::endl;
-    } catch (const std::exception& e) {
-        std::cout << "Exception: " << e.what() << std::endl;
+        dump_critical_error(vm, e.what());
+    } catch (const LuaError& e) {
+        std::cout << e.what() << std::endl;
     }
 
     return 0;

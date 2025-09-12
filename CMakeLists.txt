@@ -17,7 +17,6 @@ set(SOURCES
     src/lexer.cpp
     src/luao.cpp
     src/object.cpp
-    src/opcodes.cpp
     src/parser.cpp
     src/table.cpp
     src/vm.cpp

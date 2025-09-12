@@ -1,0 +1,56 @@
+[
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/api.cpp.obj -c D:/luao/src/api.cpp",
+  "file": "D:/luao/src/api.cpp",
+  "output": "CMakeFiles/luao.dir/src/api.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/bytecode.cpp.obj -c D:/luao/src/bytecode.cpp",
+  "file": "D:/luao/src/bytecode.cpp",
+  "output": "CMakeFiles/luao.dir/src/bytecode.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/debug.cpp.obj -c D:/luao/src/debug.cpp",
+  "file": "D:/luao/src/debug.cpp",
+  "output": "CMakeFiles/luao.dir/src/debug.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/lexer.cpp.obj -c D:/luao/src/lexer.cpp",
+  "file": "D:/luao/src/lexer.cpp",
+  "output": "CMakeFiles/luao.dir/src/lexer.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/luao.cpp.obj -c D:/luao/src/luao.cpp",
+  "file": "D:/luao/src/luao.cpp",
+  "output": "CMakeFiles/luao.dir/src/luao.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/object.cpp.obj -c D:/luao/src/object.cpp",
+  "file": "D:/luao/src/object.cpp",
+  "output": "CMakeFiles/luao.dir/src/object.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/parser.cpp.obj -c D:/luao/src/parser.cpp",
+  "file": "D:/luao/src/parser.cpp",
+  "output": "CMakeFiles/luao.dir/src/parser.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/table.cpp.obj -c D:/luao/src/table.cpp",
+  "file": "D:/luao/src/table.cpp",
+  "output": "CMakeFiles/luao.dir/src/table.cpp.obj"
+},
+{
+  "directory": "D:/luao",
+  "command": "C:/MinGW/w64devkit/bin/c++.exe  @CMakeFiles/luao.dir/includes_CXX.rsp -std=c++20 -o CMakeFiles/luao.dir/src/vm.cpp.obj -c D:/luao/src/vm.cpp",
+  "file": "D:/luao/src/vm.cpp",
+  "output": "CMakeFiles/luao.dir/src/vm.cpp.obj"
+}
+]
