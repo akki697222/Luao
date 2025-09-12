@@ -208,18 +208,15 @@ void test_baselib() {
         CREATE_ABx(OpCode::LOADK, 1, 1),
         CREATE_ABC(OpCode::CALL, 0, 2, 1),
         */
-        CREATE_ABC(OpCode::GETTABUP, 0, 0, 2),
-        CREATE_A(OpCode::LOADFALSE, 1),
-        CREATE_ABx(OpCode::LOADK, 2, 3),
-        CREATE_ABC(OpCode::CALL, 0, 3, 0),
-        CREATE_ABC(OpCode::RETURN, 0, 1, 1)
+        CREATE_ABC(OpCode::GETTABUP, 0, 0, 0), // R0 = _ENV["print"]
+        CREATE_ABC(OpCode::GETTABUP, 1, 0, 1), // R1 = _ENV["_VERSION"]
+        CREATE_ABC(OpCode::CALL, 0, 2, 1), // R0(R1)
+        CREATE_ABC(OpCode::RETURN, 0, 1, 1) // (EOF)
     };
 
     std::vector<LuaValue> constants = {
         LuaValue(std::make_shared<LuaString>("print"), LuaType::STRING),
-        LuaValue(std::make_shared<LuaString>("Hello, World!"), LuaType::STRING),
-        LuaValue(std::make_shared<LuaString>("assert"), LuaType::STRING),
-        LuaValue(std::make_shared<LuaString>("assertion successfully failed"), LuaType::STRING),
+        LuaValue(std::make_shared<LuaString>("_VERSION"), LuaType::STRING)
     };
 
     std::shared_ptr<LuaFunction> main_func = std::make_shared<LuaFunction>(bytecode,
@@ -252,7 +249,7 @@ int main(int argc, char **argv)
     } catch (const std::runtime_error& e) {
         dump_critical_error(vm, e.what());
     } catch (const LuaError& e) {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
 
     return 0;

@@ -44,6 +44,7 @@ static int baselib_assert(VM& vm, int base_reg, int num_args) {
 
 std::map<LuaString, LuaValue> getbaselib() {
     std::map<LuaString, LuaValue> lib;
+    lib[LuaString("_VERSION")] = LuaValue(std::make_shared<LuaString>(LUAO_VERSION), LuaType::STRING);
     lib[LuaString("print")] = LuaValue(
         std::make_shared<LuaNativeFunction>(baselib_print),
         LuaType::FUNCTION
