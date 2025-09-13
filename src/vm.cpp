@@ -110,6 +110,7 @@ void dump_critical_error(VM& vm, std::string err) {
 static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
     const auto& updescs = closure->getFunction()->getUpvalDescs();
     auto& stack = vm.get_stack_mutable();
+    auto& open_upvalues = vm.open_upvalues;
     std::shared_ptr<LuaClosure> parent = nullptr;
     if (!vm.get_call_stack().empty()) parent = vm.get_call_stack().back().closure;
 
@@ -117,17 +118,66 @@ static void setup_closure(std::shared_ptr<LuaClosure> closure, VM& vm) {
         std::shared_ptr<UpValue> uv = nullptr;
 
         if (desc.inStack) {
-            // スタック上の LuaValue をコピーして shared_ptr で保持
-            uv = std::make_shared<UpValue>(stack[desc.idx]);
+            uv = vm.find_upvalue(desc.idx);
+            if (uv == nullptr) {
+                uv = std::make_shared<UpValue>(&vm, stack[desc.idx]);
+                open_upvalues.push_front(uv);
+                uv->setIterator(open_upvalues.begin());
+            }
         } else {
             if (parent) {
                 uv = parent->getUpvalues()[desc.idx];
             } else {
-                uv = std::make_shared<UpValue>(stack[0]);
+                // This case should not happen for upvalues that are not in stack
+                // but as a fallback, we create a closed upvalue.
+                uv = std::make_shared<UpValue>(&vm, nullptr);
+                uv->close();
             }
         }
 
         closure->getUpvalues().push_back(uv);
+    }
+}
+
+void UpValue::close() {
+    if (!open_) return;
+    if (auto loc = location_.lock()) closed_ = *loc;
+    location_.reset();
+    open_ = false;
+    vm->open_upvalues.erase(open_upval_iter);
+}
+
+std::shared_ptr<UpValue> VM::find_upvalue(int stack_index) {
+    for (auto it = open_upvalues.begin(); it != open_upvalues.end(); ++it) {
+        auto& upvalue = *it;
+        if (upvalue->isOpen() && !upvalue->getLocation().expired()) {
+            if (upvalue->getLocation().lock().get() == stack[stack_index].get()) {
+                return upvalue;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void VM::close_upvalues(int stack_index) {
+    auto it = open_upvalues.begin();
+    while (it != open_upvalues.end()) {
+        auto& upvalue = *it;
+        if (upvalue->isOpen() && !upvalue->getLocation().expired()) {
+            // Check if the upvalue points to a stack slot at or above the given index
+            // This is a bit tricky since we only have the pointer, not the index.
+            // A possible solution is to calculate the index from the pointer.
+            auto* p = upvalue->getLocation().lock().get();
+            auto* base = &(*stack[0]);
+            if (p >= &(*stack[stack_index])) {
+                upvalue->close();
+                it = open_upvalues.begin(); // a bit inefficient, but safe
+            } else {
+                ++it;
+            }
+        } else {
+            ++it;
+        }
     }
 }
 
@@ -1542,14 +1592,7 @@ void VM::run() {
                         n_results = top - (frame->stack_base + a);
                     }
                 
-                    // Close open upvalues if necessary
-                    if (op != OpCode::RETURN0) {
-                        for (auto& upval : frame->closure->getUpvalues()) {
-                            if (upval->isOpen() && !upval->getLocation().expired()) {
-                                upval->close();
-                            }
-                        }
-                    }
+                    close_upvalues(frame->stack_base);
                 
                     // Call vreturn to handle return values
                     vreturn(*this, frame, a, n_results);
@@ -1645,10 +1688,16 @@ void VM::run() {
                         for (const auto& desc : updescs) {
                             std::shared_ptr<UpValue> uv = nullptr;
                             if (desc.inStack) {
-                                // Point to a value on the parent's stack frame.
-                                uv = std::make_shared<UpValue>(stack[frame->stack_base + desc.idx]);
+                                // This upvalue is in the current function's stack frame.
+                                uv = find_upvalue(frame->stack_base + desc.idx);
+                                if (uv == nullptr) {
+                                    uv = std::make_shared<UpValue>(this, stack[frame->stack_base + desc.idx]);
+                                    open_upvalues.push_front(uv);
+                                    uv->setIterator(open_upvalues.begin());
+                                }
                             } else {
-                                // Share the upvalue from the parent closure.
+                                // This upvalue is inherited from the parent function.
+                                // We can just copy the shared_ptr from the parent's upvalue.
                                 uv = parent_upvals[desc.idx];
                             }
                             new_upvals.push_back(uv);

@@ -5,6 +5,7 @@
 #include <object.hpp>
 #include <vector>
 #include <memory>
+#include <list>
 
 #define CRITICAL_DUMP_CONTEXT_LINES 5
 
@@ -50,6 +51,8 @@ namespace luao {
 
     struct CallInfo;
     class VM;
+    class UpValue;
+    class LuaValue;
 
     void dump_critical_error(VM& vm, std::string err);
 
@@ -113,11 +116,16 @@ namespace luao {
         
         // for debug
         Instruction* last_instruction;
+
+        friend class UpValue;
     private:
         std::vector<CallInfo> call_stack;
         std::vector<std::shared_ptr<LuaValue>> stack;
+        std::list<std::shared_ptr<UpValue>> open_upvalues;
         int top;
         bool trace_execution = false;
+        std::shared_ptr<UpValue> find_upvalue(int stack_index);
+        void close_upvalues(int stack_index);
     };
 
 } // namespace luao

@@ -2,13 +2,16 @@
 
 #include <object.hpp>
 #include <memory>
+#include <list>
 
 namespace luao {
 
+class VM;
+
 class UpValue : public LuaObject {
 public:
-    UpValue(std::shared_ptr<LuaValue> location)
-        : location_(location), open_(true) {}
+    UpValue(VM* vm, std::shared_ptr<LuaValue> location)
+        : vm(vm), location_(location), open_(true) {}
 
     bool isOpen() const { return open_; }
 
@@ -18,7 +21,7 @@ public:
 
     LuaValue getValue() const {
         if (auto loc = location_.lock()) return *loc;
-        return closed_; 
+        return closed_;
     }
 
     void setValue(const LuaValue& value) {
@@ -26,20 +29,25 @@ public:
         else closed_ = value;
     }
 
-    void close() {
-        if (!open_) return;
-        if (auto loc = location_.lock()) closed_ = *loc;
-        location_.reset();
-        open_ = false;
-    }
+    void close();
 
     LuaType getType() const override { return LuaType::USERDATA; }
     std::string typeName() const override { return "upvalue"; }
 
+    std::list<std::shared_ptr<UpValue>>::iterator getIterator() {
+        return open_upval_iter;
+    }
+
+    void setIterator(std::list<std::shared_ptr<UpValue>>::iterator it) {
+        open_upval_iter = it;
+    }
+
 private:
+    VM* vm;
     std::weak_ptr<LuaValue> location_;
     LuaValue closed_;
     bool open_;
+    std::list<std::shared_ptr<UpValue>>::iterator open_upval_iter;
 };
 
 } // namespace luao
