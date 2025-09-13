@@ -174,7 +174,7 @@ void VM::load(std::shared_ptr<LuaClosure> main_closure) {
 }
 
 void VM::set_top(int new_top) {
-    top == new_top;
+    top = new_top;
 }
 
 int VM::get_top() {
