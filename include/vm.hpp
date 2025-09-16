@@ -117,15 +117,16 @@ namespace luao {
         // for debug
         Instruction* last_instruction;
 
+        std::shared_ptr<UpValue> find_upvalue(int stack_index);
+        std::list<std::shared_ptr<UpValue>> open_upvalues;
+        void close_upvalues(int stack_index);
+
         friend class UpValue;
     private:
         std::vector<CallInfo> call_stack;
         std::vector<std::shared_ptr<LuaValue>> stack;
-        std::list<std::shared_ptr<UpValue>> open_upvalues;
         int top;
         bool trace_execution = false;
-        std::shared_ptr<UpValue> find_upvalue(int stack_index);
-        void close_upvalues(int stack_index);
     };
 
 } // namespace luao
