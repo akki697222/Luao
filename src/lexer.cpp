@@ -6,6 +6,57 @@
 
 Lexer::Lexer(const std::string& source) : source_(source), pos_(0), line_(1) {}
 
+TokenInfo Lexer::readLongString() {
+    int start_line = line_;
+    advance(); // consume first '['
+
+    int level = 0;
+    while(peekChar() == '=') {
+        level++;
+        advance();
+    }
+
+    if (peekChar() != '[') {
+        throwError("invalid long string delimiter");
+    }
+    advance(); // consume second '['
+
+    // If the next char is a newline, skip it
+    if (peekChar() == '\n') {
+        advance();
+    }
+
+    std::string value;
+    while (pos_ < source_.size()) {
+        if (peekChar() == ']') {
+            size_t saved_pos = pos_;
+            int saved_line = line_;
+            advance(); // consume ']'
+
+            int close_level = 0;
+            while(peekChar() == '=') {
+                close_level++;
+                advance();
+            }
+
+            if (peekChar() == ']' && close_level == level) {
+                advance(); // consume final ']'
+                return {Token::STRING, value, start_line};
+            }
+
+            pos_ = saved_pos;
+            line_ = saved_line;
+        }
+
+        value += peekChar();
+        advance();
+    }
+
+    throwError("unfinished long string starting at line " + std::to_string(start_line));
+    return {Token::EOS, "", line_}; // Unreachable
+}
+
+
 TokenInfo Lexer::nextToken() {
     skipWhitespace();
     if (pos_ >= source_.size()) {
@@ -16,17 +67,17 @@ TokenInfo Lexer::nextToken() {
 
     switch (current) {
         case '+': advance(); return {Token::PLUS, "+", line_};
-        case '-': advance(); 
-            if (peekChar() == '>') { advance(); return {Token::ARROW, "->", line_}; }
-            return {Token::MINUS, "-", line_};
+        case '-': advance(); return {Token::MINUS, "-", line_};
         case '*': advance(); return {Token::MULTIPLY, "*", line_};
         case '/':
             advance();
             if (peekChar() == '/') { advance(); return {Token::IDIV, "//", line_}; }
             return {Token::DIVIDE, "/", line_};
         case '%': advance(); return {Token::MODULO, "%", line_};
-        case '^': advance(); return {Token::CARET, "^", line_};
-        case '#': advance(); return {Token::SHARP, "#", line_};
+        case '^': advance(); return {Token::POW, "^", line_};
+        case '#': advance(); return {Token::LEN, "#", line_};
+        case '&': advance(); return {Token::BAND, "&", line_};
+        case '|': advance(); return {Token::BOR, "|", line_};
         case '=':
             advance();
             if (peekChar() == '=') { advance(); return {Token::EQ, "==", line_}; }
@@ -34,7 +85,7 @@ TokenInfo Lexer::nextToken() {
         case '~':
             advance();
             if (peekChar() == '=') { advance(); return {Token::NE, "~=", line_}; }
-            throwError("unexpected symbol near '~'");
+            return {Token::BNOT, "~", line_};
         case '<':
             advance();
             if (peekChar() == '=') { advance(); return {Token::LE, "<=", line_}; }
@@ -49,7 +100,12 @@ TokenInfo Lexer::nextToken() {
         case ')': advance(); return {Token::RPAREN, ")", line_};
         case '{': advance(); return {Token::LBRACE, "{", line_};
         case '}': advance(); return {Token::RBRACE, "}", line_};
-        case '[': advance(); return {Token::LBRACKET, "[", line_};
+        case '[':
+            if (pos_ + 1 < source_.size() && (source_[pos_ + 1] == '[' || source_[pos_ + 1] == '=')) {
+                return readLongString();
+            }
+            advance();
+            return {Token::LBRACKET, "[", line_};
         case ']': advance(); return {Token::RBRACKET, "]", line_};
         case ';': advance(); return {Token::SEMICOLON, ";", line_};
         case ':':
@@ -57,7 +113,6 @@ TokenInfo Lexer::nextToken() {
             if (peekChar() == ':') { advance(); return {Token::COLON_DB, "::", line_}; }
             return {Token::COLON, ":", line_};
         case ',': advance(); return {Token::COMMA, ",", line_};
-        case '!': advance(); return {Token::NULLABLE, "!", line_};
         case '.':
             advance();
             if (peekChar() == '.') {
@@ -68,7 +123,7 @@ TokenInfo Lexer::nextToken() {
             return {Token::DOT, ".", line_};
     }
 
-    if (isAlpha(current)) {
+    if (isAlpha(current) || current == '_') {
         return readIdentifierOrKeyword();
     }
 
@@ -76,7 +131,7 @@ TokenInfo Lexer::nextToken() {
         return readNumber();
     }
 
-    if (current == '"') {
+    if (current == '"' || current == '\'') {
         return readString();
     }
 
@@ -107,7 +162,7 @@ char Lexer::peekChar() const {
 void Lexer::skipWhitespace() {
     while (pos_ < source_.size()) {
         char c = source_[pos_];
-        if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+        if (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\v') {
             advance();
         } else if (c == '-') {
             if (pos_ + 1 < source_.size() && source_[pos_ + 1] == '-') {
@@ -122,22 +177,46 @@ void Lexer::skipWhitespace() {
 }
 
 void Lexer::skipComment() {
-    advance();
-    advance();
+    advance(); // -
+    advance(); // -
+
     if (peekChar() == '[') {
-        advance();
-        if (peekChar() == '[') {
+        advance(); // [
+        int level = 0;
+        while(peekChar() == '=') {
+            level++;
             advance();
-            skipLongComment();
-            return;
         }
-        pos_--;
+        if (peekChar() == '[') {
+            advance(); // [
+            // Long comment
+            while (pos_ < source_.size()) {
+                if (peekChar() == ']') {
+                    advance();
+                    int close_level = 0;
+                    while(peekChar() == '=') {
+                        close_level++;
+                        advance();
+                    }
+                    if (peekChar() == ']' && close_level == level) {
+                        advance();
+                        return;
+                    }
+                } else {
+                    advance();
+                }
+            }
+            throwError("unfinished long comment");
+        }
     }
+
+    // Short comment
     while (pos_ < source_.size() && source_[pos_] != '\n') {
         advance();
     }
 }
 
+// This function is now unused, but I'll keep it for reference
 void Lexer::skipLongComment() {
     int level = 1;
     while (pos_ < source_.size()) {
@@ -165,7 +244,6 @@ TokenInfo Lexer::readIdentifierOrKeyword() {
     if (value == "and") return {Token::AND, value, line_};
     if (value == "break") return {Token::BREAK, value, line_};
     if (value == "do") return {Token::DO, value, line_};
-    if (value == "each") return {Token::EACH, value, line_};
     if (value == "else") return {Token::ELSE, value, line_};
     if (value == "elseif") return {Token::ELSEIF, value, line_};
     if (value == "end") return {Token::END, value, line_};
@@ -185,13 +263,6 @@ TokenInfo Lexer::readIdentifierOrKeyword() {
     if (value == "true") return {Token::TRUE, value, line_};
     if (value == "until") return {Token::UNTIL, value, line_};
     if (value == "while") return {Token::WHILE, value, line_};
-    if (value == "class") return {Token::CLASS, value, line_};
-    if (value == "object") return {Token::OBJECT, value, line_};
-    if (value == "type") return {Token::TYPE, value, line_};
-    if (value == "throw") return {Token::THROW, value, line_};
-    if (value == "try") return {Token::TRY, value, line_};
-    if (value == "catch") return {Token::CATCH, value, line_};
-    if (value == "finally") return {Token::FINALLY, value, line_};
     return {Token::IDENTIFIER, value, line_};
 }
 
@@ -213,6 +284,7 @@ TokenInfo Lexer::readNumber() {
             value += source_[pos_];
             advance();
         }
+        // TODO: Hex floats with 'p' or 'P'
         return {Token::INT, value, line_};
     }
     
@@ -252,17 +324,18 @@ TokenInfo Lexer::readNumber() {
 
 TokenInfo Lexer::readString() {
     std::string value;
-    advance(); // "
+    char delimiter = source_[pos_];
+    advance(); // " or '
     int start_line = line_;
     
-    while (pos_ < source_.size() && source_[pos_] != '"') {
+    while (pos_ < source_.size() && source_[pos_] != delimiter) {
         if (source_[pos_] == '\n') {
-            throwError("unfinished string near '\"'");
+            throwError("unfinished string near '" + std::string(1, delimiter) + "'");
         }
         if (source_[pos_] == '\\') {
             advance();
             if (pos_ >= source_.size()) {
-                throwError("unfinished string near '\"'");
+                throwError("unfinished string near '" + std::string(1, delimiter) + "'");
             }
             char c = source_[pos_];
             switch (c) {
@@ -288,9 +361,8 @@ TokenInfo Lexer::readString() {
                     break;
                 default:
                     if (isDigit(c)) {
-                        int num = c - '0';
-                        advance();
-                        for (int i = 0; i < 2 && pos_ < source_.size() && isDigit(source_[pos_]); i++) {
+                        int num = 0;
+                        for (int i = 0; i < 3 && pos_ < source_.size() && isDigit(source_[pos_]); i++) {
                             num = num * 10 + (source_[pos_] - '0');
                             if (num > 255) {
                                 throwError("decimal escape too large near '" + 
@@ -300,7 +372,20 @@ TokenInfo Lexer::readString() {
                         }
                         value += static_cast<char>(num);
                         pos_--;
-                    } else {
+                    } else if (c == 'x') {
+                        advance();
+                        int num = 0;
+                        if (pos_ + 1 < source_.size() && isHexDigit(source_[pos_]) && isHexDigit(source_[pos_ + 1])) {
+                            // Simplified: doesn't handle single-digit hex like \xa
+                            num = (isDigit(source_[pos_]) ? source_[pos_] - '0' : (tolower(source_[pos_]) - 'a' + 10)) * 16;
+                            advance();
+                            num += (isDigit(source_[pos_]) ? source_[pos_] - '0' : (tolower(source_[pos_]) - 'a' + 10));
+                            value += static_cast<char>(num);
+                        } else {
+                            throwError("hexadecimal escape sequence must have 2 digits");
+                        }
+                    }
+                    else {
                         throwError("invalid escape sequence near '\\" + std::string(1, c) + "'");
                     }
                     break;
@@ -314,7 +399,7 @@ TokenInfo Lexer::readString() {
     
     if (pos_ >= source_.size()) {
         if (start_line == line_) {
-            throwError("unfinished string near '\"'");
+            throwError("unfinished string near '" + std::string(1, delimiter) + "'");
         } else {
             throwError("unfinished string near '<eof>'");
         }
@@ -329,7 +414,7 @@ void Lexer::throwError(const std::string& msg) {
 }
 
 bool Lexer::isAlpha(char c) const {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '$';
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
 bool Lexer::isDigit(char c) const {
